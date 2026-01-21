@@ -15,8 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { ArrowLeft, Phone, Mail, MapPin, FileText, CreditCard, Recycle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Phone, Mail, MapPin, FileText, CreditCard, Recycle, AlertCircle, Plus, Store, Users, User, FileDigit } from 'lucide-react'
 import { mockClients, mockCredits, mockScrapPayments } from '@/lib/mock-data'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function ClientDetailPage({
   params,
@@ -40,14 +41,14 @@ export default function ClientDetailPage({
   }, [clientCredits, clientPayments])
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-PE', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PEN',
     }).format(value)
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('es-ES', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -57,15 +58,15 @@ export default function ClientDetailPage({
   if (!client) {
     return (
       <>
-        <DashboardHeader title="Client Not Found" />
+        <DashboardHeader title="Negocio No Encontrado" />
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
-            <h1 className="text-xl font-semibold mb-2">Client Not Found</h1>
+            <h1 className="text-xl font-semibold mb-2">Negocio No Encontrado</h1>
             <p className="text-muted-foreground mb-4">
-              The client you are looking for does not exist.
+              El negocio que buscas no existe.
             </p>
             <Button asChild>
-              <Link href="/clients">Back to Clients</Link>
+              <Link href="/clients">Volver a Negocios</Link>
             </Button>
           </div>
         </div>
@@ -76,10 +77,10 @@ export default function ClientDetailPage({
   return (
     <>
       <DashboardHeader
-        title={client.name}
+        title={client.businessName || client.name}
         breadcrumbs={[
-          { label: 'Clients', href: '/clients' },
-          { label: client.name },
+          { label: 'Negocios', href: '/clients' },
+          { label: client.businessName || client.name },
         ]}
       />
       <div className="flex-1 overflow-auto p-4 md:p-6">
@@ -90,15 +91,28 @@ export default function ClientDetailPage({
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
-              <p className="text-muted-foreground">Client since {formatDate(client.createdAt)}</p>
+            <div className="flex items-center gap-4">
+                 <Avatar className="w-16 h-16 rounded-lg border">
+                    {client.photoUrl ? (
+                        <AvatarImage src={client.photoUrl} alt={client.businessName} />
+                    ) : (
+                        <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                            <Store className="w-8 h-8" />
+                        </AvatarFallback>
+                    )}
+                 </Avatar>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight">{client.businessName || client.name}</h1>
+                  <p className="text-muted-foreground flex items-center gap-2">
+                    <User className="w-3 h-3" /> {client.ownerName || 'Sin nombre de responsable'}
+                  </p>
+                </div>
             </div>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="grid w-full grid-cols-4 max-w-[600px]">
-              <TabsTrigger value="overview">Info del cliente</TabsTrigger>
+              <TabsTrigger value="overview">Info del negocio</TabsTrigger>
               <TabsTrigger value="credits">Creditos</TabsTrigger>
               <TabsTrigger value="payments">Pagos con chatarra</TabsTrigger>
               <TabsTrigger value="summary">Resumen</TabsTrigger>
@@ -108,20 +122,40 @@ export default function ClientDetailPage({
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Contact Information</CardTitle>
+                    <CardTitle className="text-lg">Informacion de Contacto y Legal</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span>{client.phone || 'Not provided'}</span>
+                    <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                                <FileDigit className="w-3 h-3" /> RUC
+                             </p>
+                             <p className="text-sm font-medium">{client.ruc || 'No registrado'}</p>
+                         </div>
+                         <div className="space-y-1">
+                             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                                <FileDigit className="w-3 h-3" /> DNI
+                             </p>
+                             <p className="text-sm font-medium">{client.dni || 'No registrado'}</p>
+                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Mail className="w-4 h-4 text-muted-foreground" />
-                      <span>{client.email || 'Not provided'}</span>
+                    <div className="space-y-1 border-t pt-3">
+                         <div className="flex items-center gap-3">
+                            <Phone className="w-4 h-4 text-muted-foreground" />
+                            <span>{client.phone || 'No registrado'}</span>
+                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span>{client.address || 'Not provided'}</span>
+                     <div className="space-y-1">
+                         <div className="flex items-center gap-3">
+                            <Mail className="w-4 h-4 text-muted-foreground" />
+                            <span>{client.email || 'No registrado'}</span>
+                         </div>
+                    </div>
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                            <MapPin className="w-4 h-4 text-muted-foreground" />
+                            <span>{client.address || 'No registrado'}</span>
+                        </div>
                     </div>
                     {client.notes && (
                       <div className="flex items-start gap-3 pt-2 border-t">
@@ -136,7 +170,7 @@ export default function ClientDetailPage({
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <AlertCircle className={`w-4 h-4 ${client.currentDebt > 0 ? 'text-destructive' : 'text-primary'}`} />
-                      Current Debt
+                      Deuda Actual
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -145,8 +179,8 @@ export default function ClientDetailPage({
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
                       {client.currentDebt > 0
-                        ? 'Outstanding balance to be collected'
-                        : 'No outstanding debt'}
+                        ? 'Saldo pendiente de cobro'
+                        : 'Sin deuda pendiente'}
                     </p>
                   </CardContent>
                 </Card>
@@ -155,19 +189,26 @@ export default function ClientDetailPage({
 
             <TabsContent value="credits" className="space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Credit History</CardTitle>
-                  <CardDescription>All credit deliveries for this client</CardDescription>
+                <CardHeader className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Historial de Creditos</CardTitle>
+                    <CardDescription>Todos los creditos otorgados al cliente</CardDescription>
+                  </div>
+
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nuevo Credito
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {clientCredits.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Product</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Producto</TableHead>
+                          <TableHead>Monto</TableHead>
+                          <TableHead>Estado</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -186,7 +227,7 @@ export default function ClientDetailPage({
                                     : 'destructive'
                                 }
                               >
-                                {credit.status}
+                                {credit.status === 'paid' ? 'Pagado' : credit.status === 'partial' ? 'Parcial' : 'Pendiente'}
                               </Badge>
                             </TableCell>
                           </TableRow>
@@ -195,7 +236,7 @@ export default function ClientDetailPage({
                     </Table>
                   ) : (
                     <p className="text-center text-muted-foreground py-8">
-                      No credit history for this client
+                      Sin historial de creditos
                     </p>
                   )}
                 </CardContent>
@@ -204,19 +245,26 @@ export default function ClientDetailPage({
 
             <TabsContent value="payments" className="space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Scrap Payments</CardTitle>
-                  <CardDescription>All scrap payments received from this client</CardDescription>
+                <CardHeader className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Pagos con Chatarra</CardTitle>
+                    <CardDescription>Pagos recibidos en chatarra</CardDescription>
+                  </div>
+
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nuevo Pago
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {clientPayments.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Scrap Details</TableHead>
-                          <TableHead>Value</TableHead>
-                          <TableHead>Notes</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Detalle</TableHead>
+                          <TableHead>Valor</TableHead>
+                          <TableHead>Notas</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -226,16 +274,16 @@ export default function ClientDetailPage({
                             <TableCell>
                               <div className="text-sm space-y-1">
                                 {payment.scrapDetails.ironKg > 0 && (
-                                  <div>Iron: {payment.scrapDetails.ironKg}kg</div>
+                                  <div>Hierro: {payment.scrapDetails.ironKg}kg</div>
                                 )}
                                 {payment.scrapDetails.batteriesUnits > 0 && (
-                                  <div>Batteries: {payment.scrapDetails.batteriesUnits} units</div>
+                                  <div>Baterias: {payment.scrapDetails.batteriesUnits} u</div>
                                 )}
                                 {payment.scrapDetails.copperKg > 0 && (
-                                  <div>Copper: {payment.scrapDetails.copperKg}kg</div>
+                                  <div>Cobre: {payment.scrapDetails.copperKg}kg</div>
                                 )}
                                 {payment.scrapDetails.aluminumKg > 0 && (
-                                  <div>Aluminum: {payment.scrapDetails.aluminumKg}kg</div>
+                                  <div>Aluminio: {payment.scrapDetails.aluminumKg}kg</div>
                                 )}
                               </div>
                             </TableCell>
@@ -251,7 +299,7 @@ export default function ClientDetailPage({
                     </Table>
                   ) : (
                     <p className="text-center text-muted-foreground py-8">
-                      No payments received from this client
+                      No hay pagos registrados
                     </p>
                   )}
                 </CardContent>
@@ -262,7 +310,7 @@ export default function ClientDetailPage({
               <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Credit</CardTitle>
+                    <CardTitle className="text-sm font-medium">Credito Total</CardTitle>
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -270,14 +318,14 @@ export default function ClientDetailPage({
                       {formatCurrency(financialSummary.totalCredit)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      From {clientCredits.length} credit(s)
+                      De {clientCredits.length} credito(s)
                     </p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Paid</CardTitle>
+                    <CardTitle className="text-sm font-medium">Total Pagado</CardTitle>
                     <Recycle className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -285,14 +333,14 @@ export default function ClientDetailPage({
                       {formatCurrency(financialSummary.totalPaid)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      From {clientPayments.length} payment(s)
+                      De {clientPayments.length} pago(s)
                     </p>
                   </CardContent>
                 </Card>
 
                 <Card className={financialSummary.pendingDebt > 0 ? 'border-destructive/50' : ''}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Pending Debt</CardTitle>
+                    <CardTitle className="text-sm font-medium">Deuda Pendiente</CardTitle>
                     <AlertCircle className={`h-4 w-4 ${financialSummary.pendingDebt > 0 ? 'text-destructive' : 'text-primary'}`} />
                   </CardHeader>
                   <CardContent>
@@ -300,7 +348,7 @@ export default function ClientDetailPage({
                       {formatCurrency(financialSummary.pendingDebt)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {financialSummary.pendingDebt > 0 ? 'Outstanding balance' : 'All paid up!'}
+                      {financialSummary.pendingDebt > 0 ? 'Saldo pendiente' : 'Al dia!'}
                     </p>
                   </CardContent>
                 </Card>

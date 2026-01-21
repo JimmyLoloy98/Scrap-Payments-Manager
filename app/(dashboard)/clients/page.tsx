@@ -34,8 +34,6 @@ import {
 } from '@/components/ui/select'
 import type { Client } from '@/lib/types'
 
-const availableOrigins = ['Origin1', 'Origin2', 'Origin3']; // Declare availableOrigins variable
-
 export default function ClientsPage() {
   const { origins } = useOrigins()
   const [clients, setClients] = useState<Client[]>(mockClients)
@@ -55,12 +53,17 @@ export default function ClientsPage() {
     const newClient: Client = {
       id: String(clients.length + 1),
       companyId: 'company-1',
-      name: data.name || '',
+      name: data.businessName || data.name || '',
+      businessName: data.businessName || '',
+      ownerName: data.ownerName || '',
+      dni: data.dni || '',
+      ruc: data.ruc || '',
       phone: data.phone || '',
       email: data.email || '',
       address: data.address || '',
       origin: data.origin || '',
       notes: data.notes || '',
+      photoUrl: data.photoUrl || '',
       currentDebt: 0,
       createdAt: new Date(),
     }
@@ -70,7 +73,17 @@ export default function ClientsPage() {
   const handleEditClient = async (id: string, data: Partial<Client>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))
     setClients(
-      clients.map((c) => (c.id === id ? { ...c, ...data } : c))
+      clients.map((c) => {
+          if (c.id === id) {
+              // Update name if businessName is updated, for compatibility
+              const updatedData = { ...data };
+              if (updatedData.businessName) {
+                  updatedData.name = updatedData.businessName;
+              }
+              return { ...c, ...updatedData };
+          }
+          return c;
+      })
     )
   }
 
@@ -89,16 +102,15 @@ export default function ClientsPage() {
   const columns: Column<Client>[] = [
     {
       key: 'name',
-      header: 'Name',
+      header: 'Negocio / Dueño',
       cell: (row) => (
-        <Link href={`/clients/${row.id}`} className="font-medium hover:underline">
-          {row.name}
-        </Link>
+        <div className="flex flex-col">
+          <Link href={`/clients/${row.id}`} className="font-medium hover:underline">
+            {row.businessName || row.name}
+          </Link>
+          <span className="text-xs text-muted-foreground">{row.ownerName}</span>
+        </div>
       ),
-    },
-    {
-      key: 'phone',
-      header: 'Phone',
     },
     {
       key: 'origin',
@@ -108,15 +120,18 @@ export default function ClientsPage() {
       ),
     },
     {
-      key: 'address',
-      header: 'Address',
-      cell: (row) => (
-        <span className="max-w-[200px] truncate block">{row.address}</span>
+       key: 'phone', // Use a valid key from Client even if we customize cell
+       header: 'Identificadores',
+       cell: (row) => (
+        <div className="flex flex-col text-xs text-muted-foreground gap-0.5">
+          {row.ruc && <span>RUC: {row.ruc}</span>}
+          {row.dni && <span>DNI: {row.dni}</span>}
+        </div>
       ),
     },
     {
       key: 'currentDebt',
-      header: 'Current Debt',
+      header: 'Deuda Actual',
       cell: (row) => (
         <span className={row.currentDebt > 0 ? 'text-destructive font-medium' : 'text-primary'}>
           {formatCurrency(row.currentDebt)}
@@ -124,8 +139,8 @@ export default function ClientsPage() {
       ),
     },
     {
-      key: 'actions',
-      header: 'Actions',
+      key: 'actions', // This key is virtual/custom in DataTable but we use 'id' or similar to satisfy TS if needed, but DataTable likely handles any string key for custom cells
+      header: 'Acciones',
       sortable: false,
       searchable: false,
       cell: (row) => (
@@ -140,7 +155,7 @@ export default function ClientsPage() {
             <DropdownMenuItem asChild>
               <Link href={`/clients/${row.id}`}>
                 <Eye className="w-4 h-4 mr-2" />
-                View Details
+                Ver Detalles
               </Link>
             </DropdownMenuItem>
             <ClientFormDialog
@@ -149,7 +164,7 @@ export default function ClientsPage() {
               trigger={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <Pencil className="w-4 h-4 mr-2" />
-                  Edit
+                  Editar
                 </DropdownMenuItem>
               }
             />
@@ -158,7 +173,7 @@ export default function ClientsPage() {
               onSelect={() => setDeleteClient(row)}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+              Eliminar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -168,14 +183,14 @@ export default function ClientsPage() {
 
   return (
     <>
-      <DashboardHeader title="Clients" />
+      <DashboardHeader title="Negocios" />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Clients</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Negocios</h1>
               <p className="text-muted-foreground">
-                Manage your client database and track their accounts
+                Gestiona tu base de datos de clientes y sus cuentas
               </p>
             </div>
             <ClientFormDialog onSubmit={handleAddClient} />
@@ -213,7 +228,7 @@ export default function ClientsPage() {
           <DataTable
             data={filteredClients}
             columns={columns}
-            searchPlaceholder="Search clients..."
+            searchPlaceholder="Buscar negocios..."
           />
         </div>
       </div>
@@ -221,19 +236,19 @@ export default function ClientsPage() {
       <AlertDialog open={!!deleteClient} onOpenChange={() => setDeleteClient(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Client</AlertDialogTitle>
+            <AlertDialogTitle>Eliminar Negocio</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {deleteClient?.name}? This action cannot be
-              undone and will remove all associated records.
+              Estas seguro de que deseas eliminar a {deleteClient?.businessName || deleteClient?.name}? Esta accion no se
+              puede deshacer y eliminara todos los registros asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteClient}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

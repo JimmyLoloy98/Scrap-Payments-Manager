@@ -28,6 +28,11 @@ export interface Client {
   id: string
   companyId: string
   name: string
+  ownerName: string // Nombre del dueño/gerente
+  dni: string // Identificador de cliente
+  ruc: string // Identificador de negocio
+  businessName: string // Nombre del local/negocio (nombre comercial)
+  photoUrl?: string // Foto del local
   phone: string
   email: string
   address: string
@@ -47,6 +52,11 @@ export interface ScrapType {
 }
 
 // Credit types
+export interface CreditItem {
+  description: string
+  price: number
+}
+
 export interface Credit {
   id: string
   companyId: string
@@ -54,8 +64,8 @@ export interface Credit {
   clientName: string
   clientOrigin: string // Lugar de procedencia del cliente
   date: Date
-  productDescription: string
-  amount: number
+  items: CreditItem[]
+  amount: number // Total amount (sum of items)
   status: 'pending' | 'partial' | 'paid'
   notes: string
   createdAt: Date

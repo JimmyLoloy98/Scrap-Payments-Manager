@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select'
 import type { Credit } from '@/lib/types'
 
-const availableOrigins = ['Origin1', 'Origin2', 'Origin3']; // Declare availableOrigins here
+// const availableOrigins = ['Origin1', 'Origin2', 'Origin3']; // Declare availableOrigins here
 
 export default function CreditsPage() {
   const { origins } = useOrigins()
@@ -57,7 +57,7 @@ export default function CreditsPage() {
       clientName: data.clientName || '',
       clientOrigin: selectedClient?.origin || '',
       date: data.date || new Date(),
-      productDescription: data.productDescription || '',
+      items: data.items || [],
       amount: data.amount || 0,
       status: 'pending',
       notes: data.notes || '',
@@ -90,12 +90,12 @@ export default function CreditsPage() {
   const columns: Column<Credit>[] = [
     {
       key: 'date',
-      header: 'Date',
+      header: 'Fecha',
       cell: (row) => formatDate(row.date),
     },
     {
       key: 'clientName',
-      header: 'Client',
+      header: 'Cliente',
       cell: (row) => (
         <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
           {row.clientName}
@@ -110,22 +110,35 @@ export default function CreditsPage() {
       ),
     },
     {
-      key: 'productDescription',
-      header: 'Product',
+      key: 'items',
+      header: 'Productos', // Changed from 'Product' to match functionality
       cell: (row) => (
-        <span className="max-w-[200px] truncate block">{row.productDescription}</span>
+        <div className="flex flex-col gap-1">
+            {row.items && row.items.length > 0 ? (
+                row.items.map((item, idx) => (
+                    <span key={idx} className="block text-sm truncate max-w-[250px]">
+                        • {item.description}
+                    </span>
+                ))
+            ) : (
+                <span className="text-muted-foreground italic">Sin productos</span>
+            )}
+            {/* Fallback for old data if any */}
+            {/* @ts-ignore */}
+            {row.productDescription && <span className="block text-sm text-yellow-600">Old: {row.productDescription}</span>}
+        </div>
       ),
     },
     {
       key: 'amount',
-      header: 'Amount',
+      header: 'Monto Total',
       cell: (row) => (
-        <span className="font-medium">{formatCurrency(row.amount)}</span>
+        <span className="font-bold">{formatCurrency(row.amount)}</span>
       ),
     },
     {
       key: 'status',
-      header: 'Status',
+      header: 'Estado',
       cell: (row) => (
         <Badge
           variant={
@@ -138,7 +151,7 @@ export default function CreditsPage() {
           className="gap-1"
         >
           {getStatusIcon(row.status)}
-          {row.status}
+          {row.status === 'paid' ? 'Pagado' : row.status === 'partial' ? 'Parcial' : 'Pendiente'}
         </Badge>
       ),
     },
@@ -193,12 +206,12 @@ export default function CreditsPage() {
 
   return (
     <>
-      <DashboardHeader title="Credits" />
+      <DashboardHeader title="Creditos" />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Credits</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Creditos con productos</h1>
               <p className="text-muted-foreground">
                 Track all credit deliveries to your clients
               </p>

@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Plus, Pencil } from 'lucide-react'
+import { Loader2, Plus, Pencil, Upload } from 'lucide-react'
 import type { Client } from '@/lib/types'
 import { useOrigins } from '@/contexts/origins-context'
 
@@ -38,25 +38,54 @@ export function ClientFormDialog({ client, onSubmit, trigger }: ClientFormDialog
   const [open, setOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: client?.name || '',
+    businessName: client?.businessName || '',
+    ownerName: client?.ownerName || '',
+    dni: client?.dni || '',
+    ruc: client?.ruc || '',
     phone: client?.phone || '',
     email: client?.email || '',
     address: client?.address || '',
     origin: client?.origin || '',
     notes: client?.notes || '',
+    photoUrl: client?.photoUrl || '',
   })
 
+  // Fallback for sync with old format if editing
+  React.useEffect(() => {
+    if (client) {
+      setFormData(prev => ({
+        ...prev,
+        businessName: client.businessName || client.name || '',
+      }))
+    }
+  }, [client])
+
   const isEditing = !!client
-  const { availableOrigins } = useOrigins()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     try {
-      await onSubmit(formData)
+      // Map businessName to name for compatibility with existing types/codebase until fully migrated
+      const submissionData = {
+        ...formData,
+        name: formData.businessName, // Keep name synced with businessName for now
+      }
+      await onSubmit(submissionData)
       setOpen(false)
       if (!isEditing) {
-        setFormData({ name: '', phone: '', email: '', address: '', origin: '', notes: '' })
+        setFormData({
+          businessName: '',
+          ownerName: '',
+          dni: '',
+          ruc: '',
+          phone: '',
+          email: '',
+          address: '',
+          origin: '',
+          notes: '',
+          photoUrl: '',
+        })
       }
     } finally {
       setIsLoading(false)
@@ -69,61 +98,95 @@ export function ClientFormDialog({ client, onSubmit, trigger }: ClientFormDialog
         {trigger || (
           <Button>
             {isEditing ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-            {isEditing ? 'Edit Client' : 'New Client'}
+            {isEditing ? 'Editar Negocio' : 'Nuevo Negocio'}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Client' : 'Add New Client'}</DialogTitle>
+          <DialogTitle>{isEditing ? 'Editar Negocio' : 'Agregar Nuevo Negocio'}</DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the client information below.'
-              : 'Fill in the details to add a new client.'}
+              ? 'Actualiza la informacion del negocio a continuacion.'
+              : 'Complete los detalles para agregar un nuevo negocio.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="businessName">Nombre del Negocio (Comercial) *</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Client name"
+                id="businessName"
+                value={formData.businessName}
+                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                placeholder="Ej: Recicladora Martinez"
                 required
               />
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="ownerName">Nombre del Dueño/Gerente</Label>
+                <Input
+                  id="ownerName"
+                  value={formData.ownerName}
+                  onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                  placeholder="Ej: Roberto Martinez"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="phone">Telefono</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+1 555-0123"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="client@example.com"
+                  placeholder="+51 999 999 999"
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="dni">DNI (Cliente)</Label>
+                <Input
+                  id="dni"
+                  value={formData.dni}
+                  onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
+                  placeholder="DNI del dueño"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="ruc">RUC (Negocio)</Label>
+                <Input
+                  id="ruc"
+                  value={formData.ruc}
+                  onChange={(e) => setFormData({ ...formData, ruc: e.target.value })}
+                  placeholder="RUC del negocio"
+                />
+              </div>
+            </div>
+
             <div className="grid gap-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="negocio@ejemplo.com"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="address">Direccion</Label>
               <Input
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="123 Main St, City"
+                placeholder="Av. Principal 123, Ciudad"
               />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="origin">Lugar de Procedencia</Label>
               <Select
@@ -142,24 +205,36 @@ export function ClientFormDialog({ client, onSubmit, trigger }: ClientFormDialog
                 </SelectContent>
               </Select>
             </div>
+
             <div className="grid gap-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="photo">Foto del Local</Label>
+              <div className="flex items-center gap-4">
+                 <Button type="button" variant="outline" className="w-full" onClick={() => alert('Simulacion: Foto subida')}>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Subir Foto
+                 </Button>
+                 {formData.photoUrl && <span className="text-xs text-green-600">Foto cargada</span>}
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="notes">Notas</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Additional notes about this client..."
+                placeholder="Notas adicionales..."
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {isEditing ? 'Save Changes' : 'Add Client'}
+              {isEditing ? 'Guardar Cambios' : 'Crear Negocio'}
             </Button>
           </DialogFooter>
         </form>
