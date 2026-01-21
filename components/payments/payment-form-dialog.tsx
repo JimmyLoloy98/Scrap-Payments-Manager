@@ -228,7 +228,7 @@ export function PaymentFormDialog({
                         handleItemChange(index, "scrapId", value)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Seleccionar..." />
                       </SelectTrigger>
                       <SelectContent>

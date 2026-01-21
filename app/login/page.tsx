@@ -29,7 +29,7 @@ export default function LoginPage() {
 
     const success = await login(email, password)
     if (success) {
-      router.push('/dashboard')
+      router.push('/clients')
     } else {
       setError('Invalid credentials. Please try again.')
     }
