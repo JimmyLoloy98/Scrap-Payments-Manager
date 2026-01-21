@@ -1,4 +1,4 @@
-import type { Client, Credit, ScrapPayment, DashboardStats, RecentActivity, Origin } from './types'
+import type { Client, Credit, ScrapPayment, DashboardStats, RecentActivity, Origin, ScrapType } from './types'
 
 // Mock origins (lugares de procedencia)
 export const mockOrigins: Origin[] = [
@@ -35,6 +35,38 @@ export const mockOrigins: Origin[] = [
     companyId: 'company-1',
     name: 'Zona Rural',
     description: 'Clientes de zonas rurales cercanas',
+    createdAt: new Date('2024-01-01'),
+  },
+]
+
+// Mock scrap types (tipos de chatarra)
+export const mockScrapTypes: ScrapType[] = [
+  {
+    id: '1',
+    companyId: 'company-1',
+    name: 'Hierro',
+    description: 'Chatarra de hierro general',
+    createdAt: new Date('2024-01-01'),
+  },
+  {
+    id: '2',
+    companyId: 'company-1',
+    name: 'Baterias',
+    description: 'Baterias de auto usadas',
+    createdAt: new Date('2024-01-01'),
+  },
+  {
+    id: '3',
+    companyId: 'company-1',
+    name: 'Cobre',
+    description: 'Cobre limpio',
+    createdAt: new Date('2024-01-01'),
+  },
+  {
+    id: '4',
+    companyId: 'company-1',
+    name: 'Aluminio',
+    description: 'Aluminio de latas y perfiles',
     createdAt: new Date('2024-01-01'),
   },
 ]
@@ -179,6 +211,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     companyId: 'company-1',
     clientId: '3',
     clientName: 'Carlos Fernandez',
+    clientOrigin: 'Zona Norte',
     date: new Date('2025-01-06'),
     scrapDetails: {
       ironKg: 150,
@@ -195,6 +228,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     companyId: 'company-1',
     clientId: '2',
     clientName: 'Maria Santos',
+    clientOrigin: 'Zona Centro',
     date: new Date('2025-01-09'),
     scrapDetails: {
       ironKg: 80,
@@ -211,6 +245,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     companyId: 'company-1',
     clientId: '1',
     clientName: 'Roberto Martinez',
+    clientOrigin: 'Zona Industrial',
     date: new Date('2025-01-11'),
     scrapDetails: {
       ironKg: 200,

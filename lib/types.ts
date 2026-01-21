@@ -37,6 +37,15 @@ export interface Client {
   createdAt: Date
 }
 
+// Scrap Type (Tipos de Chatarra)
+export interface ScrapType {
+  id: string
+  companyId: string
+  name: string
+  description: string
+  createdAt: Date
+}
+
 // Credit types
 export interface Credit {
   id: string
@@ -65,6 +74,7 @@ export interface ScrapPayment {
   companyId: string
   clientId: string
   clientName: string
+  clientOrigin: string
   date: Date
   scrapDetails: ScrapDetails
   totalValue: number

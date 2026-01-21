@@ -45,17 +45,17 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Clients',
+    title: 'Negocios',
     url: '/clients',
     icon: Users,
   },
   {
-    title: 'Credits',
+    title: 'Creditos',
     url: '/credits',
     icon: CreditCard,
   },
   {
-    title: 'Scrap Payments',
+    title: 'Pagos con chatarra',
     url: '/payments',
     icon: Recycle,
   },
@@ -63,6 +63,11 @@ const navItems = [
     title: 'Procedencias',
     url: '/origins',
     icon: MapPin,
+  },
+  {
+    title: 'Chatarras',
+    url: '/scraps',
+    icon: Recycle,
   },
 ]
 

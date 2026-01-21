@@ -24,7 +24,7 @@ export default function ClientDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  
+
   const client = mockClients.find((c) => c.id === id)
   const clientCredits = mockCredits.filter((c) => c.clientId === id)
   const clientPayments = mockScrapPayments.filter((p) => p.clientId === id)
@@ -98,10 +98,10 @@ export default function ClientDetailPage({
 
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="grid w-full grid-cols-4 max-w-[600px]">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="credits">Credits</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
-              <TabsTrigger value="summary">Summary</TabsTrigger>
+              <TabsTrigger value="overview">Info del cliente</TabsTrigger>
+              <TabsTrigger value="credits">Creditos</TabsTrigger>
+              <TabsTrigger value="payments">Pagos con chatarra</TabsTrigger>
+              <TabsTrigger value="summary">Resumen</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
