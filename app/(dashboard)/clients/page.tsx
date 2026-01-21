@@ -120,16 +120,6 @@ export default function ClientsPage() {
       ),
     },
     {
-       key: 'phone', // Use a valid key from Client even if we customize cell
-       header: 'Identificadores',
-       cell: (row) => (
-        <div className="flex flex-col text-xs text-muted-foreground gap-0.5">
-          {row.ruc && <span>RUC: {row.ruc}</span>}
-          {row.dni && <span>DNI: {row.dni}</span>}
-        </div>
-      ),
-    },
-    {
       key: 'currentDebt',
       header: 'Deuda Actual',
       cell: (row) => (

@@ -37,7 +37,7 @@ interface DataTableProps<T> {
   searchPlaceholder?: string
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T>({
   data,
   columns,
   pageSize: initialPageSize = 10,
@@ -56,7 +56,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
     return data.filter((row) =>
       searchableColumns.some((col) => {
-        const value = row[col.key]
+        const value = (row as any)[col.key]
         if (value == null) return false
         return String(value).toLowerCase().includes(search.toLowerCase())
       })
@@ -67,8 +67,8 @@ export function DataTable<T extends Record<string, unknown>>({
     if (!sortKey) return filteredData
 
     return [...filteredData].sort((a, b) => {
-      const aVal = a[sortKey]
-      const bVal = b[sortKey]
+      const aVal = (a as any)[sortKey]
+      const bVal = (b as any)[sortKey]
 
       if (aVal == null && bVal == null) return 0
       if (aVal == null) return 1
@@ -155,7 +155,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 <TableRow key={index}>
                   {columns.map((column) => (
                     <TableCell key={column.key}>
-                      {column.cell ? column.cell(row) : String(row[column.key] ?? '')}
+                      {column.cell ? column.cell(row) : String((row as any)[column.key] ?? '')}
                     </TableCell>
                   ))}
                 </TableRow>
