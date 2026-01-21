@@ -1,12 +1,18 @@
-'use client'
+"use client";
 
-import { use, useMemo } from 'react'
-import Link from 'next/link'
-import { DashboardHeader } from '@/components/dashboard-header'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { use, useMemo } from "react";
+import Link from "next/link";
+import { DashboardHeader } from "@/components/dashboard-header";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,46 +20,60 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { ArrowLeft, Phone, Mail, MapPin, FileText, CreditCard, Recycle, AlertCircle, Plus, Store, Users, User, FileDigit } from 'lucide-react'
-import { mockClients, mockCredits, mockScrapPayments } from '@/lib/mock-data'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+} from "@/components/ui/table";
+import {
+  ArrowLeft,
+  Phone,
+  Mail,
+  MapPin,
+  FileText,
+  CreditCard,
+  Recycle,
+  AlertCircle,
+  Plus,
+  Store,
+  Users,
+  User,
+  FileDigit,
+} from "lucide-react";
+import { mockClients, mockCredits, mockScrapPayments } from "@/lib/mock-data";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ClientDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params)
+  const { id } = use(params);
 
-  const client = mockClients.find((c) => c.id === id)
-  const clientCredits = mockCredits.filter((c) => c.clientId === id)
-  const clientPayments = mockScrapPayments.filter((p) => p.clientId === id)
+  const client = mockClients.find((c) => c.id === id);
+  const clientCredits = mockCredits.filter((c) => c.clientId === id);
+  const clientPayments = mockScrapPayments.filter((p) => p.clientId === id);
 
   const financialSummary = useMemo(() => {
-    const totalCredit = clientCredits.reduce((sum, c) => sum + c.amount, 0)
-    const totalPaid = clientPayments.reduce((sum, p) => sum + p.totalValue, 0)
+    const totalCredit = clientCredits.reduce((sum, c) => sum + c.amount, 0);
+    const totalPaid = clientPayments.reduce((sum, p) => sum + p.totalValue, 0);
     return {
       totalCredit,
       totalPaid,
       pendingDebt: totalCredit - totalPaid,
-    }
-  }, [clientCredits, clientPayments])
+    };
+  }, [clientCredits, clientPayments]);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(value)
-  }
+    return new Intl.NumberFormat("es-PE", {
+      style: "currency",
+      currency: "PEN",
+    }).format(value);
+  };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(new Date(date))
-  }
+    return new Intl.DateTimeFormat("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(new Date(date));
+  };
 
   if (!client) {
     return (
@@ -61,7 +81,9 @@ export default function ClientDetailPage({
         <DashboardHeader title="Negocio No Encontrado" />
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center">
-            <h1 className="text-xl font-semibold mb-2">Negocio No Encontrado</h1>
+            <h1 className="text-xl font-semibold mb-2">
+              Negocio No Encontrado
+            </h1>
             <p className="text-muted-foreground mb-4">
               El negocio que buscas no existe.
             </p>
@@ -71,7 +93,7 @@ export default function ClientDetailPage({
           </div>
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -79,7 +101,7 @@ export default function ClientDetailPage({
       <DashboardHeader
         title={client.businessName || client.name}
         breadcrumbs={[
-          { label: 'Negocios', href: '/clients' },
+          { label: "Negocios", href: "/clients" },
           { label: client.businessName || client.name },
         ]}
       />
@@ -92,21 +114,27 @@ export default function ClientDetailPage({
               </Link>
             </Button>
             <div className="flex items-center gap-4">
-                 <Avatar className="w-16 h-16 rounded-lg border">
-                    {client.photoUrl ? (
-                        <AvatarImage src={client.photoUrl} alt={client.businessName} />
-                    ) : (
-                        <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
-                            <Store className="w-8 h-8" />
-                        </AvatarFallback>
-                    )}
-                 </Avatar>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight">{client.businessName || client.name}</h1>
-                  <p className="text-muted-foreground flex items-center gap-2">
-                    <User className="w-3 h-3" /> {client.ownerName || 'Sin nombre de responsable'}
-                  </p>
-                </div>
+              <Avatar className="w-16 h-16 rounded-lg border">
+                {client.photoUrl ? (
+                  <AvatarImage
+                    src={client.photoUrl}
+                    alt={client.businessName}
+                  />
+                ) : (
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                    <Store className="w-8 h-8" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  {client.businessName || client.name}
+                </h1>
+                <p className="text-muted-foreground flex items-center gap-2">
+                  <User className="w-3 h-3" />{" "}
+                  {client.ownerName || "Sin nombre de responsable"}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -122,65 +150,81 @@ export default function ClientDetailPage({
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Informacion de Contacto y Legal</CardTitle>
+                    <CardTitle className="text-lg">
+                      Informacion de Contacto y Legal
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                         <div className="space-y-1">
-                             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                                <FileDigit className="w-3 h-3" /> RUC
-                             </p>
-                             <p className="text-sm font-medium">{client.ruc || 'No registrado'}</p>
-                         </div>
-                         <div className="space-y-1">
-                             <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                                <FileDigit className="w-3 h-3" /> DNI
-                             </p>
-                             <p className="text-sm font-medium">{client.dni || 'No registrado'}</p>
-                         </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                          <FileDigit className="w-3 h-3" /> RUC
+                        </p>
+                        <p className="text-sm font-medium">
+                          {client.ruc || "No registrado"}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                          <FileDigit className="w-3 h-3" /> DNI
+                        </p>
+                        <p className="text-sm font-medium">
+                          {client.dni || "No registrado"}
+                        </p>
+                      </div>
                     </div>
                     <div className="space-y-1 border-t pt-3">
-                         <div className="flex items-center gap-3">
-                            <Phone className="w-4 h-4 text-muted-foreground" />
-                            <span>{client.phone || 'No registrado'}</span>
-                         </div>
-                    </div>
-                     <div className="space-y-1">
-                         <div className="flex items-center gap-3">
-                            <Mail className="w-4 h-4 text-muted-foreground" />
-                            <span>{client.email || 'No registrado'}</span>
-                         </div>
+                      <div className="flex items-center gap-3">
+                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <span>{client.phone || "No registrado"}</span>
+                      </div>
                     </div>
                     <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                            <MapPin className="w-4 h-4 text-muted-foreground" />
-                            <span>{client.address || 'No registrado'}</span>
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <Mail className="w-4 h-4 text-muted-foreground" />
+                        <span>{client.email || "No registrado"}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span>{client.address || "No registrado"}</span>
+                      </div>
                     </div>
                     {client.notes && (
                       <div className="flex items-start gap-3 pt-2 border-t">
                         <FileText className="w-4 h-4 text-muted-foreground mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{client.notes}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {client.notes}
+                        </span>
                       </div>
                     )}
                   </CardContent>
                 </Card>
 
-                <Card className={client.currentDebt > 0 ? 'border-destructive/50' : ''}>
+                <Card
+                  className={
+                    client.currentDebt > 0 ? "border-destructive/50" : ""
+                  }
+                >
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <AlertCircle className={`w-4 h-4 ${client.currentDebt > 0 ? 'text-destructive' : 'text-primary'}`} />
+                      <AlertCircle
+                        className={`w-4 h-4 ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
+                      />
                       Deuda Actual
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={`text-3xl font-bold ${client.currentDebt > 0 ? 'text-destructive' : 'text-primary'}`}>
+                    <p
+                      className={`text-3xl font-bold ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
+                    >
                       {formatCurrency(client.currentDebt)}
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
                       {client.currentDebt > 0
-                        ? 'Saldo pendiente de cobro'
-                        : 'Sin deuda pendiente'}
+                        ? "Saldo pendiente de cobro"
+                        : "Sin deuda pendiente"}
                     </p>
                   </CardContent>
                 </Card>
@@ -192,7 +236,9 @@ export default function ClientDetailPage({
                 <CardHeader className="flex items-center justify-between">
                   <div>
                     <CardTitle>Historial de Creditos</CardTitle>
-                    <CardDescription>Todos los creditos otorgados al cliente</CardDescription>
+                    <CardDescription>
+                      Todos los creditos otorgados al cliente
+                    </CardDescription>
                   </div>
 
                   <Button>
@@ -215,19 +261,36 @@ export default function ClientDetailPage({
                         {clientCredits.map((credit) => (
                           <TableRow key={credit.id}>
                             <TableCell>{formatDate(credit.date)}</TableCell>
-                            <TableCell>{credit.productDescription}</TableCell>
-                            <TableCell>{formatCurrency(credit.amount)}</TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                {credit.items && credit.items.length > 0 ? (
+                                  credit.items.map((item, i) => (
+                                    <div key={i}>• {item.description}</div>
+                                  ))
+                                ) : (
+                                  /* @ts-ignore */
+                                  <div>{credit.productDescription}</div>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {formatCurrency(credit.amount)}
+                            </TableCell>
                             <TableCell>
                               <Badge
                                 variant={
-                                  credit.status === 'paid'
-                                    ? 'default'
-                                    : credit.status === 'partial'
-                                    ? 'secondary'
-                                    : 'destructive'
+                                  credit.status === "paid"
+                                    ? "default"
+                                    : credit.status === "partial"
+                                      ? "secondary"
+                                      : "destructive"
                                 }
                               >
-                                {credit.status === 'paid' ? 'Pagado' : credit.status === 'partial' ? 'Parcial' : 'Pendiente'}
+                                {credit.status === "paid"
+                                  ? "Pagado"
+                                  : credit.status === "partial"
+                                    ? "Parcial"
+                                    : "Pendiente"}
                               </Badge>
                             </TableCell>
                           </TableRow>
@@ -248,7 +311,9 @@ export default function ClientDetailPage({
                 <CardHeader className="flex items-center justify-between">
                   <div>
                     <CardTitle>Pagos con Chatarra</CardTitle>
-                    <CardDescription>Pagos recibidos en chatarra</CardDescription>
+                    <CardDescription>
+                      Pagos recibidos en chatarra
+                    </CardDescription>
                   </div>
 
                   <Button>
@@ -273,17 +338,18 @@ export default function ClientDetailPage({
                             <TableCell>{formatDate(payment.date)}</TableCell>
                             <TableCell>
                               <div className="text-sm space-y-1">
-                                {payment.scrapDetails.ironKg > 0 && (
-                                  <div>Hierro: {payment.scrapDetails.ironKg}kg</div>
-                                )}
-                                {payment.scrapDetails.batteriesUnits > 0 && (
-                                  <div>Baterias: {payment.scrapDetails.batteriesUnits} u</div>
-                                )}
-                                {payment.scrapDetails.copperKg > 0 && (
-                                  <div>Cobre: {payment.scrapDetails.copperKg}kg</div>
-                                )}
-                                {payment.scrapDetails.aluminumKg > 0 && (
-                                  <div>Aluminio: {payment.scrapDetails.aluminumKg}kg</div>
+                                {payment.items && payment.items.length > 0 ? (
+                                  payment.items.map((item, idx) => (
+                                    <div key={idx}>
+                                      {item.scrapName}:{" "}
+                                      {formatCurrency(item.amount)}
+                                    </div>
+                                  ))
+                                ) : (
+                                  /* @ts-ignore */
+                                  <span className="text-muted-foreground italic">
+                                    Old data
+                                  </span>
                                 )}
                               </div>
                             </TableCell>
@@ -310,7 +376,9 @@ export default function ClientDetailPage({
               <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Credito Total</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Credito Total
+                    </CardTitle>
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -325,7 +393,9 @@ export default function ClientDetailPage({
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Pagado</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Total Pagado
+                    </CardTitle>
                     <Recycle className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -338,17 +408,31 @@ export default function ClientDetailPage({
                   </CardContent>
                 </Card>
 
-                <Card className={financialSummary.pendingDebt > 0 ? 'border-destructive/50' : ''}>
+                <Card
+                  className={
+                    financialSummary.pendingDebt > 0
+                      ? "border-destructive/50"
+                      : ""
+                  }
+                >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Deuda Pendiente</CardTitle>
-                    <AlertCircle className={`h-4 w-4 ${financialSummary.pendingDebt > 0 ? 'text-destructive' : 'text-primary'}`} />
+                    <CardTitle className="text-sm font-medium">
+                      Deuda Pendiente
+                    </CardTitle>
+                    <AlertCircle
+                      className={`h-4 w-4 ${financialSummary.pendingDebt > 0 ? "text-destructive" : "text-primary"}`}
+                    />
                   </CardHeader>
                   <CardContent>
-                    <div className={`text-2xl font-bold ${financialSummary.pendingDebt > 0 ? 'text-destructive' : 'text-primary'}`}>
+                    <div
+                      className={`text-2xl font-bold ${financialSummary.pendingDebt > 0 ? "text-destructive" : "text-primary"}`}
+                    >
                       {formatCurrency(financialSummary.pendingDebt)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {financialSummary.pendingDebt > 0 ? 'Saldo pendiente' : 'Al dia!'}
+                      {financialSummary.pendingDebt > 0
+                        ? "Saldo pendiente"
+                        : "Al dia!"}
                     </p>
                   </CardContent>
                 </Card>
@@ -358,5 +442,5 @@ export default function ClientDetailPage({
         </div>
       </div>
     </>
-  )
+  );
 }

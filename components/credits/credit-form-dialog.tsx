@@ -183,7 +183,7 @@ export function CreditFormDialog({
 
             <div className="space-y-4 border rounded-md p-4 bg-muted/20">
               <div className="flex items-center justify-between">
-                <Label>Productos</Label>
+                <Label>Detalles de productos</Label>
                 <Button
                   type="button"
                   variant="outline"

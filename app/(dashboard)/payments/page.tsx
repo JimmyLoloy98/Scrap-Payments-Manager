@@ -12,12 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { MoreHorizontal, Eye, Package } from 'lucide-react'
 import { mockScrapPayments, mockClients } from '@/lib/mock-data'
 import type { ScrapPayment } from '@/lib/types'
@@ -47,13 +41,9 @@ export default function PaymentsPage() {
       companyId: 'company-1',
       clientId: data.clientId || '',
       clientName: data.clientName || '',
+      clientOrigin: mockClients.find(c => c.id === data.clientId)?.origin || '',
       date: data.date || new Date(),
-      scrapDetails: data.scrapDetails || {
-        ironKg: 0,
-        batteriesUnits: 0,
-        copperKg: 0,
-        aluminumKg: 0,
-      },
+      items: data.items || [],
       totalValue: data.totalValue || 0,
       notes: data.notes || '',
       createdAt: new Date(),
@@ -61,32 +51,15 @@ export default function PaymentsPage() {
     setPayments([newPayment, ...payments])
   }
 
-  const formatScrapSummary = (payment: ScrapPayment) => {
-    const parts: string[] = []
-    if (payment.scrapDetails.ironKg > 0) {
-      parts.push(`Iron: ${payment.scrapDetails.ironKg}kg`)
-    }
-    if (payment.scrapDetails.batteriesUnits > 0) {
-      parts.push(`Batteries: ${payment.scrapDetails.batteriesUnits}`)
-    }
-    if (payment.scrapDetails.copperKg > 0) {
-      parts.push(`Copper: ${payment.scrapDetails.copperKg}kg`)
-    }
-    if (payment.scrapDetails.aluminumKg > 0) {
-      parts.push(`Aluminum: ${payment.scrapDetails.aluminumKg}kg`)
-    }
-    return parts
-  }
-
   const columns: Column<ScrapPayment>[] = [
     {
       key: 'date',
-      header: 'Date',
+      header: 'Fecha',
       cell: (row) => formatDate(row.date),
     },
     {
       key: 'clientName',
-      header: 'Client',
+      header: 'Cliente',
       cell: (row) => (
         <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
           {row.clientName}
@@ -94,44 +67,36 @@ export default function PaymentsPage() {
       ),
     },
     {
-      key: 'scrapDetails',
-      header: 'Scrap Types',
+      key: 'items',
+      header: 'Detalle de Chatarra',
       sortable: false,
-      cell: (row) => {
-        const parts = formatScrapSummary(row)
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {parts.length} type{parts.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="space-y-1">
-                  {parts.map((part, i) => (
-                    <div key={i}>{part}</div>
-                  ))}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )
-      },
+      cell: (row) => (
+         <div className="flex flex-col gap-1">
+            {row.items && row.items.length > 0 ? (
+                row.items.map((item, idx) => (
+                    <span key={idx} className="block text-sm">
+                        • {item.scrapName}: {formatCurrency(item.amount)}
+                    </span>
+                ))
+            ) : (
+                <span className="text-muted-foreground italic">Sin detalles</span>
+            )}
+             {/* Fallback for old data if needed */}
+             {/* @ts-ignore */}
+             {row.scrapDetails && <span className="text-xs text-yellow-600">Old data present</span>}
+        </div>
+      ),
     },
     {
       key: 'totalValue',
-      header: 'Total Value',
+      header: 'Valor Total',
       cell: (row) => (
         <span className="font-medium text-primary">{formatCurrency(row.totalValue)}</span>
       ),
     },
     {
       key: 'notes',
-      header: 'Notes',
+      header: 'Notas',
       cell: (row) => (
         <span className="max-w-[150px] truncate block text-muted-foreground">
           {row.notes || '-'}
@@ -140,7 +105,7 @@ export default function PaymentsPage() {
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: 'Acciones',
       sortable: false,
       searchable: false,
       cell: (row) => (
@@ -155,7 +120,7 @@ export default function PaymentsPage() {
             <DropdownMenuItem asChild>
               <Link href={`/clients/${row.clientId}`}>
                 <Eye className="w-4 h-4 mr-2" />
-                View Client
+                Ver Cliente
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -165,8 +130,6 @@ export default function PaymentsPage() {
   ]
 
   const totalReceived = payments.reduce((sum, p) => sum + p.totalValue, 0)
-  const totalIron = payments.reduce((sum, p) => sum + p.scrapDetails.ironKg, 0)
-  const totalCopper = payments.reduce((sum, p) => sum + p.scrapDetails.copperKg, 0)
 
   return (
     <>
@@ -187,14 +150,6 @@ export default function PaymentsPage() {
             <div className="rounded-lg border bg-card p-4">
               <p className="text-sm text-muted-foreground">Total Received</p>
               <p className="text-2xl font-bold text-primary">{formatCurrency(totalReceived)}</p>
-            </div>
-            <div className="rounded-lg border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Iron Collected</p>
-              <p className="text-2xl font-bold">{totalIron.toFixed(1)} kg</p>
-            </div>
-            <div className="rounded-lg border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Copper Collected</p>
-              <p className="text-2xl font-bold">{totalCopper.toFixed(1)} kg</p>
             </div>
           </div>
 

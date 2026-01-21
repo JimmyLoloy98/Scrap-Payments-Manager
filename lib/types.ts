@@ -72,11 +72,10 @@ export interface Credit {
 }
 
 // Scrap Payment types
-export interface ScrapDetails {
-  ironKg: number
-  batteriesUnits: number
-  copperKg: number
-  aluminumKg: number
+export interface ScrapItem {
+  scrapId: string
+  scrapName: string
+  amount: number // Monetary value
 }
 
 export interface ScrapPayment {
@@ -86,7 +85,7 @@ export interface ScrapPayment {
   clientName: string
   clientOrigin: string
   date: Date
-  scrapDetails: ScrapDetails
+  items: ScrapItem[]
   totalValue: number
   notes: string
   createdAt: Date

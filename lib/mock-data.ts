@@ -233,12 +233,10 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Carlos Fernandez',
     clientOrigin: 'Zona Norte',
     date: new Date('2025-01-06'),
-    scrapDetails: {
-      ironKg: 150,
-      batteriesUnits: 20,
-      copperKg: 10,
-      aluminumKg: 25,
-    },
+    items: [
+      { scrapId: '1', scrapName: 'Hierro', amount: 1500 },
+      { scrapId: '3', scrapName: 'Cobre', amount: 600 }
+    ],
     totalValue: 2100,
     notes: 'Full payment for credit #3',
     createdAt: new Date('2025-01-06'),
@@ -250,12 +248,10 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Maria Santos',
     clientOrigin: 'Zona Centro',
     date: new Date('2025-01-09'),
-    scrapDetails: {
-      ironKg: 80,
-      batteriesUnits: 10,
-      copperKg: 5,
-      aluminumKg: 0,
-    },
+    items: [
+       { scrapId: '2', scrapName: 'Baterias', amount: 800 },
+       { scrapId: '1', scrapName: 'Hierro', amount: 400 }
+    ],
     totalValue: 1200,
     notes: 'Partial payment',
     createdAt: new Date('2025-01-09'),
@@ -267,12 +263,10 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Roberto Martinez',
     clientOrigin: 'Zona Industrial',
     date: new Date('2025-01-11'),
-    scrapDetails: {
-      ironKg: 200,
-      batteriesUnits: 0,
-      copperKg: 15,
-      aluminumKg: 30,
-    },
+    items: [
+       { scrapId: '1', scrapName: 'Hierro', amount: 1000 },
+       { scrapId: '4', scrapName: 'Aluminio', amount: 800 }
+    ],
     totalValue: 1800,
     notes: 'Regular collection',
     createdAt: new Date('2025-01-11'),
@@ -356,23 +350,4 @@ export const mockRecentActivity: RecentActivity[] = [
 ]
 
 // Scrap prices (per unit/kg)
-export const scrapPrices = {
-  ironPerKg: 0.5,
-  batteriesPerUnit: 15,
-  copperPerKg: 8,
-  aluminumPerKg: 2,
-}
-
-export function calculateScrapValue(details: {
-  ironKg: number
-  batteriesUnits: number
-  copperKg: number
-  aluminumKg: number
-}): number {
-  return (
-    details.ironKg * scrapPrices.ironPerKg +
-    details.batteriesUnits * scrapPrices.batteriesPerUnit +
-    details.copperKg * scrapPrices.copperPerKg +
-    details.aluminumKg * scrapPrices.aluminumPerKg
-  )
-}
+// Scrap prices and calc functions removed

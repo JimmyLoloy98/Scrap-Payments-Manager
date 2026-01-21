@@ -1,9 +1,7 @@
-'use client'
+"use client";
 
-import React from "react"
-
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,240 +10,316 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Loader2, Plus } from 'lucide-react'
-import { calculateScrapValue, scrapPrices } from '@/lib/mock-data'
-import type { Client, ScrapPayment, ScrapDetails } from '@/lib/types'
+} from "@/components/ui/select";
+import { Loader2, Plus, Trash2, CalendarIcon } from "lucide-react";
+import type { Client, ScrapPayment, ScrapItem } from "@/lib/types";
+import { useScraps } from "@/contexts/scraps-context";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface PaymentFormDialogProps {
-  clients: Client[]
-  onSubmit: (data: Partial<ScrapPayment>) => Promise<void>
+  clients: Client[];
+  onSubmit: (data: Partial<ScrapPayment>) => Promise<void>;
 }
 
-export function PaymentFormDialog({ clients, onSubmit }: PaymentFormDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    clientId: '',
-    date: new Date().toISOString().split('T')[0],
-    ironKg: '',
-    batteriesUnits: '',
-    copperKg: '',
-    aluminumKg: '',
-    notes: '',
-  })
-  const [calculatedValue, setCalculatedValue] = useState(0)
+export function PaymentFormDialog({
+  clients,
+  onSubmit,
+}: PaymentFormDialogProps) {
+  const { scraps } = useScraps();
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const scrapDetails: ScrapDetails = {
-      ironKg: parseFloat(formData.ironKg) || 0,
-      batteriesUnits: parseFloat(formData.batteriesUnits) || 0,
-      copperKg: parseFloat(formData.copperKg) || 0,
-      aluminumKg: parseFloat(formData.aluminumKg) || 0,
+  const [formData, setFormData] = useState({
+    clientId: "",
+    date: new Date(),
+    notes: "",
+  });
+
+  const [items, setItems] = useState<Partial<ScrapItem>[]>([
+    { scrapId: "", amount: 0 },
+  ]);
+
+  const calculateTotal = () => {
+    return items.reduce((sum, item) => sum + (item.amount || 0), 0);
+  };
+
+  const handleAddItem = () => {
+    setItems([...items, { scrapId: "", amount: 0 }]);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    if (items.length > 1) {
+      setItems(items.filter((_, i) => i !== index));
     }
-    setCalculatedValue(calculateScrapValue(scrapDetails))
-  }, [formData.ironKg, formData.batteriesUnits, formData.copperKg, formData.aluminumKg])
+  };
+
+  const handleItemChange = (
+    index: number,
+    field: keyof ScrapItem,
+    value: string | number,
+  ) => {
+    const newItems = [...items];
+    if (field === "amount") {
+      newItems[index] = {
+        ...newItems[index],
+        [field]: typeof value === "string" ? parseFloat(value) || 0 : value,
+      };
+    } else if (field === "scrapId") {
+      const selectedScrap = scraps.find((s) => s.id === value);
+      newItems[index] = {
+        ...newItems[index],
+        scrapId: String(value),
+        scrapName: selectedScrap?.name || "",
+      };
+    } else {
+      // @ts-ignore
+      newItems[index] = { ...newItems[index], [field]: value };
+    }
+    setItems(newItems);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.clientId) return
-
-    setIsLoading(true)
+    e.preventDefault();
+    if (!formData.clientId) return;
+    setIsLoading(true);
     try {
-      const selectedClient = clients.find((c) => c.id === formData.clientId)
-      const scrapDetails: ScrapDetails = {
-        ironKg: parseFloat(formData.ironKg) || 0,
-        batteriesUnits: parseFloat(formData.batteriesUnits) || 0,
-        copperKg: parseFloat(formData.copperKg) || 0,
-        aluminumKg: parseFloat(formData.aluminumKg) || 0,
-      }
+      const selectedClient = clients.find((c) => c.id === formData.clientId);
+
+      const validItems = items.filter(
+        (i) => i.scrapId && i.amount && i.amount > 0,
+      ) as ScrapItem[];
 
       await onSubmit({
         clientId: formData.clientId,
-        clientName: selectedClient?.name || '',
-        date: new Date(formData.date),
-        scrapDetails,
-        totalValue: calculatedValue,
+        clientName: selectedClient?.businessName || selectedClient?.name || "",
+        date: formData.date,
+        items: validItems,
+        totalValue: calculateTotal(),
         notes: formData.notes,
-      })
+      });
 
-      setOpen(false)
+      setOpen(false);
       setFormData({
-        clientId: '',
-        date: new Date().toISOString().split('T')[0],
-        ironKg: '',
-        batteriesUnits: '',
-        copperKg: '',
-        aluminumKg: '',
-        notes: '',
-      })
+        clientId: "",
+        date: new Date(),
+        notes: "",
+      });
+      setItems([{ scrapId: "", amount: 0 }]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value)
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
-          New Payment
+          Nuevo Pago
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Record Scrap Payment</DialogTitle>
+          <DialogTitle>Registrar Pago con Chatarra</DialogTitle>
           <DialogDescription>
-            Enter the scrap details received from a client.
+            Ingresa los detalles de la chatarra recibida del cliente.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="client">Client *</Label>
+            <div className="flex justify-between gap-4">
+              <div className="grid gap-2 flex-1">
+                <Label htmlFor="client">Cliente *</Label>
                 <Select
                   value={formData.clientId}
-                  onValueChange={(value) => setFormData({ ...formData, clientId: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, clientId: value })
+                  }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select client" />
+                    <SelectValue placeholder="Seleccionar cliente" />
                   </SelectTrigger>
                   <SelectContent>
                     {clients.map((client) => (
                       <SelectItem key={client.id} value={client.id}>
-                        {client.name}
+                        {client.businessName || client.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="date">Date *</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required
-                />
+              <div className="grid gap-2 flex-1">
+                <Label>Fecha</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.date && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.date ? (
+                        format(formData.date, "dd/MM/yyyy")
+                      ) : (
+                        <span>Seleccionar fecha</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={formData.date}
+                      onSelect={(d: Date | undefined) =>
+                        d && setFormData({ ...formData, date: d })
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
-            <div className="rounded-lg border p-4 space-y-4">
-              <h4 className="font-medium text-sm">Scrap Details</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="iron" className="text-sm">
-                    Iron (kg) @ ${scrapPrices.ironPerKg}/kg
-                  </Label>
-                  <Input
-                    id="iron"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    value={formData.ironKg}
-                    onChange={(e) => setFormData({ ...formData, ironKg: e.target.value })}
-                    placeholder="0"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="batteries" className="text-sm">
-                    Batteries (units) @ ${scrapPrices.batteriesPerUnit}/unit
-                  </Label>
-                  <Input
-                    id="batteries"
-                    type="number"
-                    step="1"
-                    min="0"
-                    value={formData.batteriesUnits}
-                    onChange={(e) =>
-                      setFormData({ ...formData, batteriesUnits: e.target.value })
-                    }
-                    placeholder="0"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="copper" className="text-sm">
-                    Copper (kg) @ ${scrapPrices.copperPerKg}/kg
-                  </Label>
-                  <Input
-                    id="copper"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    value={formData.copperKg}
-                    onChange={(e) => setFormData({ ...formData, copperKg: e.target.value })}
-                    placeholder="0"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="aluminum" className="text-sm">
-                    Aluminum (kg) @ ${scrapPrices.aluminumPerKg}/kg
-                  </Label>
-                  <Input
-                    id="aluminum"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    value={formData.aluminumKg}
-                    onChange={(e) =>
-                      setFormData({ ...formData, aluminumKg: e.target.value })
-                    }
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-primary/10 p-4">
+            <div className="space-y-4 border rounded-md p-4 bg-muted/20">
               <div className="flex items-center justify-between">
-                <span className="font-medium">Calculated Value</span>
-                <span className="text-2xl font-bold text-primary">
-                  {formatCurrency(calculatedValue)}
-                </span>
+                <h4 className="font-medium text-sm">Detalle de chatarras</h4>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddItem}
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Agregar Item
+                </Button>
+              </div>
+
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid sm:grid-cols-[1fr_120px_auto] gap-2 items-start"
+                >
+                  <div className="grid gap-1">
+                    {index === 0 && (
+                      <Label className="text-xs text-muted-foreground">
+                        Tipo de Chatarra
+                      </Label>
+                    )}
+                    <Select
+                      value={item.scrapId}
+                      onValueChange={(value) =>
+                        handleItemChange(index, "scrapId", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {scraps.map((scrap) => (
+                          <SelectItem key={scrap.id} value={scrap.id}>
+                            {scrap.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-1">
+                    {index === 0 && (
+                      <Label className="text-xs text-muted-foreground">
+                        Precio
+                      </Label>
+                    )}
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      value={item.amount || ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "amount", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div
+                    className={`flex items-end ${index === 0 ? "pt-6" : ""}`}
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveItem(index)}
+                      disabled={items.length === 1}
+                      className="text-destructive hover:text-destructive/90"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex justify-end pt-2 border-t">
+                <div className="text-right">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Total:{" "}
+                  </span>
+                  <span className="text-lg font-bold ml-2 text-primary">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(calculateTotal())}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">Notas</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Additional notes about this payment..."
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                placeholder="Notas adicionales..."
                 rows={2}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
+              Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading || calculatedValue === 0}>
+            <Button
+              type="submit"
+              disabled={isLoading || calculateTotal() === 0}
+            >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Record Payment
+              Registrar Pago
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
