@@ -126,9 +126,9 @@ export function CreditFormDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nuevo Credito</DialogTitle>
+          <DialogTitle>Registrar Credito</DialogTitle>
           <DialogDescription>
-            Registra un nuevo credito para un cliente.
+            Ingresa los detalles del credito.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

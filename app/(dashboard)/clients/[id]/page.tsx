@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { DashboardHeader } from "@/components/dashboard-header";
 import {
@@ -14,13 +14,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   ArrowLeft,
   Phone,
@@ -32,13 +30,20 @@ import {
   AlertCircle,
   Plus,
   Store,
-  Users,
   User,
   FileDigit,
+  MoreHorizontal,
+  Eye,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
 import { mockClients, mockCredits, mockScrapPayments } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate, formatCurrency } from '@/lib/utils'
+import { DataTable, type Column } from "@/components/data-table";
+import { Credit, ScrapPayment } from "@/lib/types";
+import { PaymentFormDialog } from "@/components/payments/payment-form-dialog";
+import { CreditFormDialog } from "@/components/credits/credit-form-dialog";
 
 export default function ClientDetailPage({
   params,
@@ -50,6 +55,247 @@ export default function ClientDetailPage({
   const client = mockClients.find((c) => c.id === id);
   const clientCredits = mockCredits.filter((c) => c.clientId === id);
   const clientPayments = mockScrapPayments.filter((p) => p.clientId === id);
+  const [credits, setCredits] = useState<Credit[]>(mockCredits)
+  const [originFilter, setOriginFilter] = useState<string>('all')
+  const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments);
+
+  const filteredCredits = credits.filter((credit) => {
+    if (originFilter === 'all') return true
+    return credit.clientOrigin === originFilter
+  })
+
+  const handleAddPayment = async (data: Partial<ScrapPayment>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const newPayment: ScrapPayment = {
+      id: String(payments.length + 1),
+      companyId: 'company-1',
+      clientId: data.clientId || '',
+      clientName: data.clientName || '',
+      clientOrigin: mockClients.find(c => c.id === data.clientId)?.origin || '',
+      date: data.date || new Date(),
+      items: data.items || [],
+      totalValue: data.totalValue || 0,
+      notes: data.notes || '',
+      createdAt: new Date(),
+    }
+    setPayments([newPayment, ...payments])
+  }
+
+  const handleAddCredit = async (data: Partial<Credit>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const selectedClient = mockClients.find((c) => c.id === data.clientId)
+    const newCredit: Credit = {
+      id: String(credits.length + 1),
+      companyId: 'company-1',
+      clientId: data.clientId || '',
+      clientName: data.clientName || '',
+      clientOrigin: selectedClient?.origin || '',
+      date: data.date || new Date(),
+      items: data.items || [],
+      amount: data.amount || 0,
+      status: 'pending',
+      notes: data.notes || '',
+      createdAt: new Date(),
+    }
+    setCredits([newCredit, ...credits])
+  }
+
+  const handleUpdateStatus = async (id: string, status: Credit['status']) => {
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    setCredits(credits.map((c) => (c.id === id ? { ...c, status } : c)))
+  }
+
+  const getStatusIcon = (status: Credit['status']) => {
+    switch (status) {
+      case 'paid':
+        return <CheckCircle className="w-3 h-3" />
+      case 'partial':
+        return <Clock className="w-3 h-3" />
+      default:
+        return <AlertCircle className="w-3 h-3" />
+    }
+  }
+
+  const columnsCredits: Column<Credit>[] = [
+    {
+      key: 'date',
+      header: 'Fecha',
+      cell: (row) => formatDate(row.date),
+    },
+    {
+      key: 'clientName',
+      header: 'Cliente',
+      cell: (row) => (
+        <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
+          {row.clientName}
+        </Link>
+      ),
+    },
+    /* {
+      key: 'clientOrigin',
+      header: 'Procedencia',
+      cell: (row) => (
+        <span className="text-muted-foreground">{row.clientOrigin || '-'}</span>
+      ),
+    }, */
+    {
+      key: 'items',
+      header: 'Productos', // Changed from 'Product' to match functionality
+      cell: (row) => (
+        <div className="flex flex-col gap-1">
+            {row.items && row.items.length > 0 ? (
+                row.items.map((item, idx) => (
+                    <span key={idx} className="block text-sm truncate max-w-[250px]">
+                        • {item.description}
+                    </span>
+                ))
+            ) : (
+                <span className="text-muted-foreground italic">Sin productos</span>
+            )}
+            {/* Fallback for old data if any */}
+            {/* @ts-ignore */}
+            {row.productDescription && <span className="block text-sm text-yellow-600">Old: {row.productDescription}</span>}
+        </div>
+      ),
+    },
+    {
+      key: 'amount',
+      header: 'Monto Total',
+      cell: (row) => (
+        <span className="font-bold">{formatCurrency(row.amount)}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      cell: (row) => (
+        <Badge
+          variant={
+            row.status === 'paid'
+              ? 'default'
+              : row.status === 'partial'
+              ? 'secondary'
+              : 'destructive'
+          }
+          className="gap-1"
+        >
+          {getStatusIcon(row.status)}
+          {row.status === 'paid' ? 'Pagado' : row.status === 'partial' ? 'Parcial' : 'Pendiente'}
+        </Badge>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      sortable: false,
+      searchable: false,
+      cell: (row) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={`/clients/${row.clientId}`}>
+                <Eye className="w-4 h-4 mr-2" />
+                View Client
+              </Link>
+            </DropdownMenuItem>
+            {row.status !== 'paid' && (
+              <>
+                <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'partial')}>
+                  <Clock className="w-4 h-4 mr-2" />
+                  Mark Partial
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'paid')}>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Mark Paid
+                </DropdownMenuItem>
+              </>
+            )}
+            {row.status === 'paid' && (
+              <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'pending')}>
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Mark Pending
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
+
+  const columnsPayments: Column<ScrapPayment>[] = [
+    {
+      key: 'date',
+      header: 'Fecha',
+      cell: (row) => formatDate(row.date),
+    },
+    {
+      key: 'clientName',
+      header: 'Cliente',
+      cell: (row) => (
+        <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
+          {row.clientName}
+        </Link>
+      ),
+    },
+    {
+      key: 'items',
+      header: 'Detalle de Chatarra',
+      sortable: false,
+      cell: (row) => (
+         <div className="flex flex-col gap-1">
+            {row.items && row.items.length > 0 ? (
+                row.items.map((item, idx) => (
+                    <span key={idx} className="block text-sm">
+                        • {item.scrapName}: {formatCurrency(item.amount)}
+                    </span>
+                ))
+            ) : (
+                <span className="text-muted-foreground italic">Sin detalles</span>
+            )}
+             {/* Fallback for old data if needed */}
+             {/* @ts-ignore */}
+             {row.scrapDetails && <span className="text-xs text-yellow-600">Old data present</span>}
+        </div>
+      ),
+    },
+    {
+      key: 'totalValue',
+      header: 'Valor Total',
+      cell: (row) => (
+        <span className="font-medium text-primary">{formatCurrency(row.totalValue)}</span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      sortable: false,
+      searchable: false,
+      cell: (row) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={`/clients/${row.clientId}`}>
+                <Eye className="w-4 h-4 mr-2" />
+                Ver Cliente
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
 
   const financialSummary = useMemo(() => {
     const totalCredit = clientCredits.reduce((sum, c) => sum + c.amount, 0);
@@ -227,67 +473,14 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nuevo Credito
-                  </Button>
+                  <CreditFormDialog clients={mockClients} onSubmit={handleAddCredit} />
                 </CardHeader>
                 <CardContent>
-                  {clientCredits.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Fecha</TableHead>
-                          <TableHead>Producto</TableHead>
-                          <TableHead>Monto</TableHead>
-                          <TableHead>Estado</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {clientCredits.map((credit) => (
-                          <TableRow key={credit.id}>
-                            <TableCell>{formatDate(credit.date)}</TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                {credit.items && credit.items.length > 0 ? (
-                                  credit.items.map((item, i) => (
-                                    <div key={i}>• {item.description}</div>
-                                  ))
-                                ) : (
-                                  /* @ts-ignore */
-                                  <div>{credit.productDescription}</div>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {formatCurrency(credit.amount)}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  credit.status === "paid"
-                                    ? "default"
-                                    : credit.status === "partial"
-                                      ? "secondary"
-                                      : "destructive"
-                                }
-                              >
-                                {credit.status === "paid"
-                                  ? "Pagado"
-                                  : credit.status === "partial"
-                                    ? "Parcial"
-                                    : "Pendiente"}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  ) : (
-                    <p className="text-center text-muted-foreground py-8">
-                      Sin historial de creditos
-                    </p>
-                  )}
+                  <DataTable
+                    data={filteredCredits}
+                    columns={columnsCredits}
+                    searchPlaceholder="Search credits..."
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -302,58 +495,14 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nuevo Pago
-                  </Button>
+                  <PaymentFormDialog clients={mockClients} onSubmit={handleAddPayment} />
                 </CardHeader>
                 <CardContent>
-                  {clientPayments.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Fecha</TableHead>
-                          <TableHead>Detalle</TableHead>
-                          <TableHead>Valor</TableHead>
-                          <TableHead>Notas</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {clientPayments.map((payment) => (
-                          <TableRow key={payment.id}>
-                            <TableCell>{formatDate(payment.date)}</TableCell>
-                            <TableCell>
-                              <div className="text-sm space-y-1">
-                                {payment.items && payment.items.length > 0 ? (
-                                  payment.items.map((item, idx) => (
-                                    <div key={idx}>
-                                      {item.scrapName}:{" "}
-                                      {formatCurrency(item.amount)}
-                                    </div>
-                                  ))
-                                ) : (
-                                  /* @ts-ignore */
-                                  <span className="text-muted-foreground italic">
-                                    Old data
-                                  </span>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-primary font-medium">
-                              {formatCurrency(payment.totalValue)}
-                            </TableCell>
-                            <TableCell className="max-w-[200px] truncate">
-                              {payment.notes}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  ) : (
-                    <p className="text-center text-muted-foreground py-8">
-                      No hay pagos registrados
-                    </p>
-                  )}
+                  <DataTable
+                    data={payments}
+                    columns={columnsPayments}
+                    searchPlaceholder="Search payments..."
+                  />
                 </CardContent>
               </Card>
             </TabsContent>

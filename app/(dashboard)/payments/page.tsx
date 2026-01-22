@@ -115,9 +115,9 @@ export default function PaymentsPage() {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Scrap Payments</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Pagos con Chatarra</h1>
               <p className="text-muted-foreground">
-                Track all scrap metal payments received from clients
+                Realizar un seguimiento de todos los pagos con chatarra recibidos de los clientes.
               </p>
             </div>
             <PaymentFormDialog clients={mockClients} onSubmit={handleAddPayment} />
@@ -125,7 +125,7 @@ export default function PaymentsPage() {
 
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 max-w-xl">
             <div className="rounded-lg border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Total Received</p>
+              <p className="text-sm text-muted-foreground">Total Recibido</p>
               <p className="text-2xl font-bold text-primary">{formatCurrency(totalReceived)}</p>
             </div>
           </div>
