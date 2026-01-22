@@ -24,6 +24,7 @@ import {
 import { MoreHorizontal, Pencil, Trash2, Recycle } from 'lucide-react'
 import { useScraps } from '@/contexts/scraps-context'
 import type { ScrapType } from '@/lib/types'
+import { formatDate } from '@/lib/utils'
 
 export default function ScrapsPage() {
   const { scraps, addScrap, updateScrap, deleteScrap } = useScraps()
@@ -41,14 +42,6 @@ export default function ScrapsPage() {
     if (!deleteTarget) return
     await deleteScrap(deleteTarget.id)
     setDeleteTarget(null)
-  }
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-PE', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).format(new Date(date))
   }
 
   const columns: Column<ScrapType>[] = [

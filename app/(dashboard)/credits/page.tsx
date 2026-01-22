@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Credit } from '@/lib/types'
+import { formatDate, formatCurrency } from '@/lib/utils'
 
 // const availableOrigins = ['Origin1', 'Origin2', 'Origin3']; // Declare availableOrigins here
 
@@ -31,21 +32,6 @@ export default function CreditsPage() {
   const { origins } = useOrigins()
   const [credits, setCredits] = useState<Credit[]>(mockCredits)
   const [originFilter, setOriginFilter] = useState<string>('all')
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(value)
-  }
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-PE', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).format(new Date(date))
-  }
 
   const handleAddCredit = async (data: Partial<Credit>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))

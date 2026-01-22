@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { mockClients, mockCredits, mockScrapPayments } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDate, formatCurrency } from '@/lib/utils'
 
 export default function ClientDetailPage({
   params,
@@ -59,21 +60,6 @@ export default function ClientDetailPage({
       pendingDebt: totalCredit - totalPaid,
     };
   }, [clientCredits, clientPayments]);
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(value);
-  };
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("es-ES", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    }).format(new Date(date));
-  };
 
   if (!client) {
     return (

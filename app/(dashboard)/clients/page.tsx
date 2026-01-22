@@ -33,19 +33,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Client } from '@/lib/types'
+import { formatCurrency } from '@/lib/utils'
 
 export default function ClientsPage() {
   const { origins } = useOrigins()
   const [clients, setClients] = useState<Client[]>(mockClients)
   const [deleteClient, setDeleteClient] = useState<Client | null>(null)
   const [originFilter, setOriginFilter] = useState<string>('all')
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(value)
-  }
 
   const handleAddClient = async (data: Partial<Client>) => {
     // Simulate API call

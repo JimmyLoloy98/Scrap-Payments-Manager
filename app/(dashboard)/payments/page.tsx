@@ -12,27 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye, Package } from 'lucide-react'
+import { MoreHorizontal, Eye } from 'lucide-react'
 import { mockScrapPayments, mockClients } from '@/lib/mock-data'
 import type { ScrapPayment } from '@/lib/types'
+import { formatDate, formatCurrency } from '@/lib/utils'
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments)
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(value)
-  }
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-PE', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).format(new Date(date))
-  }
 
   const handleAddPayment = async (data: Partial<ScrapPayment>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))

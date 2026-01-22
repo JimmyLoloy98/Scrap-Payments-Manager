@@ -24,18 +24,11 @@ import {
 import { MoreHorizontal, Pencil, Trash2, MapPin } from 'lucide-react'
 import { useOrigins } from '@/contexts/origins-context'
 import type { Origin } from '@/lib/types'
+import { formatDate } from '@/lib/utils'
 
 export default function OriginsPage() {
   const { origins, addOrigin, updateOrigin, deleteOrigin } = useOrigins()
   const [deleteTarget, setDeleteTarget] = useState<Origin | null>(null)
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-PE', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).format(new Date(date))
-  }
 
   const handleAddOrigin = async (data: Partial<Origin>) => {
     await addOrigin(data)

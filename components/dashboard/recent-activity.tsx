@@ -4,19 +4,13 @@ import { CreditCard, Recycle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { RecentActivity } from '@/lib/types'
+import { formatCurrency } from '@/lib/utils'
 
 interface RecentActivityTableProps {
   activities: RecentActivity[]
 }
 
 export function RecentActivityTable({ activities }: RecentActivityTableProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN',
-    }).format(value)
-  }
-
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-PE', {
       month: 'numeric',
