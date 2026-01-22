@@ -1,4 +1,20 @@
-import type { Client, Credit, ScrapPayment, DashboardStats, RecentActivity, Origin, ScrapType } from './types'
+import type { Client, Credit, ScrapPayment, DashboardStats, RecentActivity, Origin, ScrapType, User } from './types'
+
+
+export const mockUser: User[] = [
+  {
+    id: 'user-1',
+    email: 'admin@scrapflow.com',
+    name: 'John Admin',
+    companyId: 'company-1',
+    company: {
+      id: 'company-1',
+      name: 'Metro Scrap Solutions',
+      createdAt: new Date('2023-01-01'),
+    },
+    avatar: undefined,
+  },
+]
 
 // Mock origins (lugares de procedencia)
 export const mockOrigins: Origin[] = [
