@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { MoreHorizontal, Eye, CheckCircle, Clock, AlertCircle, Pencil } from 'lucide-react'
 import { mockCredits, mockClients } from '@/lib/mock-data'
 import { useOrigins } from '@/contexts/origins-context'
 import {
@@ -31,6 +31,7 @@ import { formatDate, formatCurrency } from '@/lib/utils'
 export default function CreditsPage() {
   const { origins } = useOrigins()
   const [credits, setCredits] = useState<Credit[]>(mockCredits)
+  const [editingCredit, setEditingCredit] = useState<Credit | null>(null)
   const [originFilter, setOriginFilter] = useState<string>('all')
 
   const handleAddCredit = async (data: Partial<Credit>) => {
@@ -55,6 +56,18 @@ export default function CreditsPage() {
   const handleUpdateStatus = async (id: string, status: Credit['status']) => {
     await new Promise((resolve) => setTimeout(resolve, 300))
     setCredits(credits.map((c) => (c.id === id ? { ...c, status } : c)))
+  }
+
+  const handleEditCredit = async (id: string, data: Partial<Credit>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setCredits(
+      credits.map((c) => {
+        if (c.id === id) {
+          return { ...c, ...data }
+        }
+        return c
+      })
+    )
   }
 
   const getStatusIcon = (status: Credit['status']) => {
@@ -161,6 +174,10 @@ export default function CreditsPage() {
                 View Client
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setEditingCredit(row)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
             {row.status !== 'paid' && (
               <>
                 <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'partial')}>
@@ -254,6 +271,20 @@ export default function CreditsPage() {
           />
         </div>
       </div>
+
+
+      <CreditFormDialog
+        clients={mockClients}
+        credit={editingCredit || undefined}
+        open={!!editingCredit}
+        onOpenChange={(open) => !open && setEditingCredit(null)}
+        onSubmit={(data) => {
+          if (editingCredit) {
+            return handleEditCredit(editingCredit.id, data);
+          }
+          return Promise.resolve();
+        }}
+      />
     </>
   )
 }

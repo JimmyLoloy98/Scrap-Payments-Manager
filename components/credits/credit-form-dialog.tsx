@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Pencil } from "lucide-react";
 import type { Client, Credit, CreditItem } from "@/lib/types";
 import {
   Popover,
@@ -37,14 +37,32 @@ interface CreditFormDialogProps {
   clients: Client[];
   onSubmit: (data: Partial<Credit>) => Promise<void>;
   trigger?: React.ReactNode;
+  credit?: Credit;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreditFormDialog({
   clients,
   onSubmit,
   trigger,
+  credit,
+  open: controlledOpen,
+  onOpenChange,
 }: CreditFormDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const setOpen = (val: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(val);
+    }
+    if (!isControlled) {
+      setInternalOpen(val);
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [clientId, setClientId] = useState("");
@@ -53,6 +71,28 @@ export function CreditFormDialog({
     { description: "", price: 0 },
   ]);
   const [notes, setNotes] = useState("");
+
+  const isEditing = !!credit;
+
+  React.useEffect(() => {
+    if (open) {
+      if (credit) {
+        setClientId(credit.clientId);
+        setDate(credit.date ? new Date(credit.date) : new Date());
+        setItems(
+          credit.items && credit.items.length > 0
+            ? credit.items
+            : [{ description: "", price: 0 }]
+        );
+        setNotes(credit.notes || "");
+      } else {
+        setClientId("");
+        setDate(new Date());
+        setItems([{ description: "", price: 0 }]);
+        setNotes("");
+      }
+    }
+  }, [credit, open]);
 
   const handleAddItem = () => {
     setItems([...items, { description: "", price: 0 }]);
@@ -126,9 +166,9 @@ export function CreditFormDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Registrar Credito</DialogTitle>
+          <DialogTitle>{isEditing ? 'Editar Credito' : 'Registrar Credito'}</DialogTitle>
           <DialogDescription>
-            Ingresa los detalles del credito.
+            {isEditing ? 'Modifica los detalles del credito.' : 'Ingresa los detalles del credito.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -292,7 +332,7 @@ export function CreditFormDialog({
               }
             >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Crear Credito
+              {isEditing ? 'Guardar Cambios' : 'Crear Credito'}
             </Button>
           </DialogFooter>
         </form>
