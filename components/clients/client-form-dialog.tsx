@@ -31,14 +31,34 @@ interface ClientFormDialogProps {
   client?: Client
   onSubmit: (data: Partial<Client>) => Promise<void>
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function ClientFormDialog({ client, onSubmit, trigger }: ClientFormDialogProps) {
+export function ClientFormDialog({
+  client,
+  onSubmit,
+  trigger,
+  open: controlledOpen,
+  onOpenChange
+}: ClientFormDialogProps) {
   const { origins } = useOrigins()
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+
+  const setOpen = (val: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(val)
+    }
+    if (!isControlled) {
+      setInternalOpen(val)
+    }
+  }
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    businessName: client?.businessName || '',
+    businessName: client?.businessName || client?.name || '',
     ownerName: client?.ownerName || '',
     dni: client?.dni || '',
     ruc: client?.ruc || '',
@@ -50,15 +70,23 @@ export function ClientFormDialog({ client, onSubmit, trigger }: ClientFormDialog
     photoUrl: client?.photoUrl || '',
   })
 
-  // Fallback for sync with old format if editing
+  // Reset form data when client changes or dialog opens
   React.useEffect(() => {
-    if (client) {
-      setFormData(prev => ({
-        ...prev,
+    if (client && open) {
+      setFormData({
         businessName: client.businessName || client.name || '',
-      }))
+        ownerName: client.ownerName || '',
+        dni: client.dni || '',
+        ruc: client.ruc || '',
+        phone: client.phone || '',
+        email: client.email || '',
+        address: client.address || '',
+        origin: client.origin || '',
+        notes: client.notes || '',
+        photoUrl: client.photoUrl || '',
+      })
     }
-  }, [client])
+  }, [client, open])
 
   const isEditing = !!client
 

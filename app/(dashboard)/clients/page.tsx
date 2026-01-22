@@ -39,6 +39,7 @@ export default function ClientsPage() {
   const { origins } = useOrigins()
   const [clients, setClients] = useState<Client[]>(mockClients)
   const [deleteClient, setDeleteClient] = useState<Client | null>(null)
+  const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [originFilter, setOriginFilter] = useState<string>('all')
 
   const handleAddClient = async (data: Partial<Client>) => {
@@ -142,16 +143,10 @@ export default function ClientsPage() {
                 Ver Detalles
               </Link>
             </DropdownMenuItem>
-            <ClientFormDialog
-              client={row}
-              onSubmit={(data) => handleEditClient(row.id, data)}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Editar
-                </DropdownMenuItem>
-              }
-            />
+            <DropdownMenuItem onSelect={() => setEditingClient(row)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
               onSelect={() => setDeleteClient(row)}
@@ -237,6 +232,17 @@ export default function ClientsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <ClientFormDialog
+        client={editingClient || undefined}
+        open={!!editingClient}
+        onOpenChange={(open) => !open && setEditingClient(null)}
+        onSubmit={(data) => {
+          if (editingClient) {
+            return handleEditClient(editingClient.id, data)
+          }
+          return Promise.resolve()
+        }}
+      />
     </>
   )
 }
