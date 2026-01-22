@@ -100,8 +100,8 @@ export function AppSidebar() {
           </div>
         </Link>
       </SidebarHeader>
-      <SidebarSeparator />
       <SidebarContent>
+      <SidebarSeparator />
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
