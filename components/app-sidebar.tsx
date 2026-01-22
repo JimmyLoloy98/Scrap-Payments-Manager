@@ -132,10 +132,10 @@ export function AppSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start text-left">
-                    <span className="text-sm font-medium truncate max-w-[120px]">
+                    <span className="text-sm font-medium max-w-[180px]">
                       {user?.name}
                     </span>
-                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                    <span className="text-xs text-muted-foreground max-w-[180px]">
                       {user?.email}
                     </span>
                   </div>
