@@ -28,7 +28,7 @@ import {
   CreditCard,
   Recycle,
   AlertCircle,
-  Plus,
+  Pencil,
   Store,
   User,
   FileDigit,
@@ -59,45 +59,36 @@ export default function ClientDetailPage({
   const [originFilter, setOriginFilter] = useState<string>('all')
   const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments);
 
+  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
+  const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
+
   const filteredCredits = credits.filter((credit) => {
     if (originFilter === 'all') return true
     return credit.clientOrigin === originFilter
   })
 
-  const handleAddPayment = async (data: Partial<ScrapPayment>) => {
+  const handleEditPayment = async (id: string, data: Partial<ScrapPayment>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))
-    const newPayment: ScrapPayment = {
-      id: String(payments.length + 1),
-      companyId: 'company-1',
-      clientId: data.clientId || '',
-      clientName: data.clientName || '',
-      clientOrigin: mockClients.find(c => c.id === data.clientId)?.origin || '',
-      date: data.date || new Date(),
-      items: data.items || [],
-      totalValue: data.totalValue || 0,
-      notes: data.notes || '',
-      createdAt: new Date(),
-    }
-    setPayments([newPayment, ...payments])
+    setPayments(
+      payments.map((p) => {
+        if (p.id === id) {
+          return { ...p, ...data }
+        }
+        return p
+      })
+    )
   }
 
-  const handleAddCredit = async (data: Partial<Credit>) => {
+  const handleEditCredit = async (id: string, data: Partial<Credit>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))
-    const selectedClient = mockClients.find((c) => c.id === data.clientId)
-    const newCredit: Credit = {
-      id: String(credits.length + 1),
-      companyId: 'company-1',
-      clientId: data.clientId || '',
-      clientName: data.clientName || '',
-      clientOrigin: selectedClient?.origin || '',
-      date: data.date || new Date(),
-      items: data.items || [],
-      amount: data.amount || 0,
-      status: 'pending',
-      notes: data.notes || '',
-      createdAt: new Date(),
-    }
-    setCredits([newCredit, ...credits])
+    setCredits(
+      credits.map((c) => {
+        if (c.id === id) {
+          return { ...c, ...data }
+        }
+        return c
+      })
+    )
   }
 
   const handleUpdateStatus = async (id: string, status: Credit['status']) => {
@@ -204,6 +195,10 @@ export default function ClientDetailPage({
                 View Client
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setEditingCredit(row)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
             {row.status !== 'paid' && (
               <>
                 <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'partial')}>
@@ -290,6 +285,10 @@ export default function ClientDetailPage({
                 <Eye className="w-4 h-4 mr-2" />
                 Ver Cliente
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setEditingPayment(row)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -473,7 +472,18 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <CreditFormDialog clients={mockClients} onSubmit={handleAddCredit} />
+                  <CreditFormDialog
+                    clients={mockClients}
+                    credit={editingCredit || undefined}
+                    open={!!editingCredit}
+                    onOpenChange={(open) => !open && setEditingCredit(null)}
+                    onSubmit={(data) => {
+                      if (editingCredit) {
+                        return handleEditCredit(editingCredit.id, data);
+                      }
+                      return Promise.resolve();
+                    }}
+                  />
                 </CardHeader>
                 <CardContent>
                   <DataTable
@@ -495,7 +505,18 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <PaymentFormDialog clients={mockClients} onSubmit={handleAddPayment} />
+                  <PaymentFormDialog
+                    clients={mockClients}
+                    payment={editingPayment || undefined}
+                    open={!!editingPayment}
+                    onOpenChange={(open) => !open && setEditingPayment(null)}
+                    onSubmit={(data) => {
+                      if (editingPayment) {
+                        return handleEditPayment(editingPayment.id, data)
+                      }
+                      return Promise.resolve()
+                    }}
+                  />
                 </CardHeader>
                 <CardContent>
                   <DataTable
