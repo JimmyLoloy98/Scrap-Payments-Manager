@@ -275,6 +275,7 @@ export default function CreditsPage() {
 
       <CreditFormDialog
         clients={mockClients}
+        trigger={<span className="hidden" />}
         credit={editingCredit || undefined}
         open={!!editingCredit}
         onOpenChange={(open) => !open && setEditingCredit(null)}

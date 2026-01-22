@@ -232,8 +232,10 @@ export default function ClientsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <ClientFormDialog
+
+      {<ClientFormDialog
         client={editingClient || undefined}
+        trigger={<span className="hidden" />}
         open={!!editingClient}
         onOpenChange={(open) => !open && setEditingClient(null)}
         onSubmit={(data) => {
@@ -242,7 +244,7 @@ export default function ClientsPage() {
           }
           return Promise.resolve()
         }}
-      />
+      />}
     </>
   )
 }

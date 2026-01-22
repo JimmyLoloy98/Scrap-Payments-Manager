@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 interface PaymentFormDialogProps {
   clients: Client[];
   onSubmit: (data: Partial<ScrapPayment>) => Promise<void>;
+  trigger?: React.ReactNode;
   payment?: ScrapPayment;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -45,6 +46,7 @@ export function PaymentFormDialog({
   clients,
   onSubmit,
   payment,
+  trigger,
   open: controlledOpen,
   onOpenChange,
 }: PaymentFormDialogProps) {
@@ -175,10 +177,12 @@ export function PaymentFormDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Pago
-        </Button>
+        {trigger || (
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo Pago
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -214,6 +218,7 @@ export function PaymentFormDialog({
                 <Label>Fecha</Label>
                 <Popover>
                   <PopoverTrigger asChild>
+
                     <Button
                       variant={"outline"}
                       className={cn(

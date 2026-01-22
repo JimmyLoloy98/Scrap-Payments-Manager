@@ -157,6 +157,7 @@ export default function PaymentsPage() {
 
       <PaymentFormDialog
         clients={mockClients}
+        trigger={<span className="hidden" />}
         payment={editingPayment || undefined}
         open={!!editingPayment}
         onOpenChange={(open) => !open && setEditingPayment(null)}
