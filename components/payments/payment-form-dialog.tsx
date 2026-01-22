@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Trash2, CalendarIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, CalendarIcon, Pencil } from "lucide-react";
 import type { Client, ScrapPayment, ScrapItem } from "@/lib/types";
 import { useScraps } from "@/contexts/scraps-context";
 import {
@@ -36,14 +36,33 @@ import { cn } from "@/lib/utils";
 interface PaymentFormDialogProps {
   clients: Client[];
   onSubmit: (data: Partial<ScrapPayment>) => Promise<void>;
+  payment?: ScrapPayment;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function PaymentFormDialog({
   clients,
   onSubmit,
+  payment,
+  open: controlledOpen,
+  onOpenChange,
 }: PaymentFormDialogProps) {
   const { scraps } = useScraps();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const setOpen = (val: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(val);
+    }
+    if (!isControlled) {
+      setInternalOpen(val);
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -55,6 +74,32 @@ export function PaymentFormDialog({
   const [items, setItems] = useState<Partial<ScrapItem>[]>([
     { scrapId: "", amount: 0 },
   ]);
+
+  const isEditing = !!payment;
+
+  React.useEffect(() => {
+    if (open) {
+      if (payment) {
+        setFormData({
+          clientId: payment.clientId,
+          date: payment.date ? new Date(payment.date) : new Date(),
+          notes: payment.notes || "",
+        });
+        setItems(
+          payment.items && payment.items.length > 0
+            ? payment.items
+            : [{ scrapId: "", amount: 0 }]
+        );
+      } else {
+        setFormData({
+            clientId: "",
+            date: new Date(),
+            notes: "",
+        });
+        setItems([{ scrapId: "", amount: 0 }]);
+      }
+    }
+  }, [payment, open]);
 
   const calculateTotal = () => {
     return items.reduce((sum, item) => sum + (item.amount || 0), 0);
@@ -137,9 +182,9 @@ export function PaymentFormDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Registrar Pago con Chatarra</DialogTitle>
+          <DialogTitle>{isEditing ? 'Editar Pago' : 'Registrar Pago con Chatarra'}</DialogTitle>
           <DialogDescription>
-            Ingresa los detalles de la chatarra recibida del cliente.
+            {isEditing ? 'Modifica los detalles del pago.' : 'Ingresa los detalles de la chatarra recibida del cliente.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -315,7 +360,7 @@ export function PaymentFormDialog({
               disabled={isLoading || calculateTotal() === 0}
             >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Registrar Pago
+              {isEditing ? 'Guardar Cambios' : 'Registrar Pago'}
             </Button>
           </DialogFooter>
         </form>

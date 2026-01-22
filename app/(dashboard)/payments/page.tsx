@@ -12,13 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Eye } from 'lucide-react'
+import { MoreHorizontal, Eye, Pencil } from 'lucide-react'
 import { mockScrapPayments, mockClients } from '@/lib/mock-data'
 import type { ScrapPayment } from '@/lib/types'
 import { formatDate, formatCurrency } from '@/lib/utils'
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments)
+  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null)
 
   const handleAddPayment = async (data: Partial<ScrapPayment>) => {
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -35,6 +36,18 @@ export default function PaymentsPage() {
       createdAt: new Date(),
     }
     setPayments([newPayment, ...payments])
+  }
+
+  const handleEditPayment = async (id: string, data: Partial<ScrapPayment>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setPayments(
+      payments.map((p) => {
+        if (p.id === id) {
+          return { ...p, ...data }
+        }
+        return p
+      })
+    )
   }
 
   const columns: Column<ScrapPayment>[] = [
@@ -100,6 +113,10 @@ export default function PaymentsPage() {
                 Ver Cliente
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setEditingPayment(row)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -137,6 +154,19 @@ export default function PaymentsPage() {
           />
         </div>
       </div>
+
+      <PaymentFormDialog
+        clients={mockClients}
+        payment={editingPayment || undefined}
+        open={!!editingPayment}
+        onOpenChange={(open) => !open && setEditingPayment(null)}
+        onSubmit={(data) => {
+          if (editingPayment) {
+            return handleEditPayment(editingPayment.id, data)
+          }
+          return Promise.resolve()
+        }}
+      />
     </>
   )
 }
