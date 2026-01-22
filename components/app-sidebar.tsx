@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Users,
-  CreditCard,
   Recycle,
   LogOut,
   Moon,
@@ -48,16 +47,6 @@ const navItems = [
     title: 'Negocios',
     url: '/clients',
     icon: Users,
-  },
-  {
-    title: 'Creditos',
-    url: '/credits',
-    icon: CreditCard,
-  },
-  {
-    title: 'Pagos con chatarra',
-    url: '/payments',
-    icon: Recycle,
   },
   {
     title: 'Procedencias',
