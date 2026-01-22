@@ -16,13 +16,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, Plus, Pencil } from 'lucide-react'
 import type { ScrapType } from '@/lib/types'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 interface ScrapFormDialogProps {
   scrap?: ScrapType
@@ -35,9 +28,7 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: scrap?.name || '',
-    description: scrap?.description || '',
-    pricePerUnit: scrap?.pricePerUnit || 0,
-    unit: scrap?.unit || 'kg',
+    description: scrap?.description || ''
   })
 
   const isEditing = !!scrap
@@ -50,7 +41,7 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
       await onSubmit(formData)
       setOpen(false)
       if (!isEditing) {
-        setFormData({ name: '', description: '', pricePerUnit: 0, unit: 'kg' })
+        setFormData({ name: '', description: '' })
       }
     } finally {
       setIsLoading(false)
@@ -89,39 +80,6 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
                 placeholder="Ej: Hierro"
                 required
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="price">Precio por Unidad</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.pricePerUnit}
-                  onChange={(e) =>
-                    setFormData({ ...formData, pricePerUnit: parseFloat(e.target.value) || 0 })
-                  }
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="unit">Unidad</Label>
-                <Select
-                  value={formData.unit}
-                  onValueChange={(value) => setFormData({ ...formData, unit: value })}
-                >
-                  <SelectTrigger id="unit">
-                    <SelectValue placeholder="Seleccionar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="kg">Kilogramo (kg)</SelectItem>
-                    <SelectItem value="lb">Libra (lb)</SelectItem>
-                    <SelectItem value="unidad">Unidad</SelectItem>
-                    <SelectItem value="ton">Tonelada</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Descripcion</Label>
