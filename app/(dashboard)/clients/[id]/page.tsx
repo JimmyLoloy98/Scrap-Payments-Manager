@@ -407,10 +407,10 @@ export default function ClientDetailPage({
 
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="grid w-full grid-cols-4 max-w-[600px]">
-              <TabsTrigger value="overview">Info del negocio</TabsTrigger>
-              <TabsTrigger value="credits">Creditos</TabsTrigger>
-              <TabsTrigger value="payments">Pagos con chatarra</TabsTrigger>
-              <TabsTrigger value="summary">Resumen</TabsTrigger>
+              <TabsTrigger value="overview" className="text-xs md:text-sm">Info del negocio</TabsTrigger>
+              <TabsTrigger value="credits" className="text-xs md:text-sm">Creditos</TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs md:text-sm">Pagos con chatarra</TabsTrigger>
+              <TabsTrigger value="summary" className="text-xs md:text-sm">Resumen</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
