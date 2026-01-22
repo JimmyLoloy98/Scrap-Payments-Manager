@@ -70,7 +70,7 @@ export default function ClientDetailPage({
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("es-ES", {
       year: "numeric",
-      month: "short",
+      month: "numeric",
       day: "numeric",
     }).format(new Date(date));
   };

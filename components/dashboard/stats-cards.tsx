@@ -43,9 +43,9 @@ export function StatsCards({ stats }: StatsCardsProps) {
 
   const formatValue = (value: number, format: 'number' | 'currency') => {
     if (format === 'currency') {
-      return new Intl.NumberFormat('en-US', {
+      return new Intl.NumberFormat('es-PE', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'PEN',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(value)

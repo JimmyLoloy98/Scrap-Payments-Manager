@@ -33,16 +33,16 @@ export default function CreditsPage() {
   const [originFilter, setOriginFilter] = useState<string>('all')
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-PE', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PEN',
     }).format(value)
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('es-PE', {
       year: 'numeric',
-      month: 'short',
+      month: 'numeric',
       day: 'numeric',
     }).format(new Date(date))
   }
@@ -102,13 +102,13 @@ export default function CreditsPage() {
         </Link>
       ),
     },
-    {
+    /* {
       key: 'clientOrigin',
       header: 'Procedencia',
       cell: (row) => (
         <span className="text-muted-foreground">{row.clientOrigin || '-'}</span>
       ),
-    },
+    }, */
     {
       key: 'items',
       header: 'Productos', // Changed from 'Product' to match functionality

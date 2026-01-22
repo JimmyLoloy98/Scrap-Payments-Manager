@@ -35,7 +35,7 @@ export function OverviewChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `S/ ${value}`}
               />
               <Tooltip
                 contentStyle={{
@@ -44,7 +44,7 @@ export function OverviewChart() {
                   borderRadius: '8px',
                 }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                formatter={(value: number) => [`S/ ${value.toLocaleString()}`, '']}
               />
               <Bar
                 dataKey="credits"

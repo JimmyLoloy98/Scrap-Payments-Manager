@@ -11,15 +11,15 @@ interface RecentActivityTableProps {
 
 export function RecentActivityTable({ activities }: RecentActivityTableProps) {
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-PE', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PEN',
     }).format(value)
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
+    return new Intl.DateTimeFormat('es-PE', {
+      month: 'numeric',
       day: 'numeric',
     }).format(new Date(date))
   }

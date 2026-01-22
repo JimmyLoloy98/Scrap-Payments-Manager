@@ -20,16 +20,16 @@ export default function PaymentsPage() {
   const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments)
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-PE', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PEN',
     }).format(value)
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat('es-PE', {
       year: 'numeric',
-      month: 'short',
+      month: 'numeric',
       day: 'numeric',
     }).format(new Date(date))
   }
@@ -92,15 +92,6 @@ export default function PaymentsPage() {
       header: 'Valor Total',
       cell: (row) => (
         <span className="font-medium text-primary">{formatCurrency(row.totalValue)}</span>
-      ),
-    },
-    {
-      key: 'notes',
-      header: 'Notas',
-      cell: (row) => (
-        <span className="max-w-[150px] truncate block text-muted-foreground">
-          {row.notes || '-'}
-        </span>
       ),
     },
     {

@@ -30,9 +30,9 @@ export default function OriginsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Origin | null>(null)
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-ES', {
+    return new Intl.DateTimeFormat('es-PE', {
       year: 'numeric',
-      month: 'short',
+      month: 'numeric',
       day: 'numeric',
     }).format(new Date(date))
   }
