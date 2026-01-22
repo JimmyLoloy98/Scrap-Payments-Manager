@@ -18,7 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft,
   Phone,
@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import { mockClients, mockCredits, mockScrapPayments } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatDate, formatCurrency } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
 import { Credit, ScrapPayment } from "@/lib/types";
 import { PaymentFormDialog } from "@/components/payments/payment-form-dialog";
@@ -55,105 +55,111 @@ export default function ClientDetailPage({
   const client = mockClients.find((c) => c.id === id);
   const clientCredits = mockCredits.filter((c) => c.clientId === id);
   const clientPayments = mockScrapPayments.filter((p) => p.clientId === id);
-  const [credits, setCredits] = useState<Credit[]>(mockCredits)
-  const [originFilter, setOriginFilter] = useState<string>('all')
+  const [credits, setCredits] = useState<Credit[]>(mockCredits);
+  const [originFilter, setOriginFilter] = useState<string>("all");
   const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments);
 
-  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
+  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(
+    null,
+  );
   const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
 
   const handleAddCredit = async (data: Partial<Credit>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const selectedClient = mockClients.find((c) => c.id === data.clientId)
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const selectedClient = mockClients.find((c) => c.id === data.clientId);
     const newCredit: Credit = {
       id: String(credits.length + 1),
-      companyId: 'company-1',
-      clientId: data.clientId || '',
-      clientName: data.clientName || '',
-      clientOrigin: selectedClient?.origin || '',
+      companyId: "company-1",
+      clientId: data.clientId || "",
+      clientName: data.clientName || "",
+      clientOrigin: selectedClient?.origin || "",
       date: data.date || new Date(),
       items: data.items || [],
       amount: data.amount || 0,
-      status: 'pending',
-      notes: data.notes || '',
+      status: "pending",
+      notes: data.notes || "",
       createdAt: new Date(),
-    }
-    setCredits([newCredit, ...credits])
-  }
+    };
+    setCredits([newCredit, ...credits]);
+  };
 
   const handleAddPayment = async (data: Partial<ScrapPayment>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 500));
     const newPayment: ScrapPayment = {
       id: String(payments.length + 1),
-      companyId: 'company-1',
-      clientId: data.clientId || '',
-      clientName: data.clientName || '',
-      clientOrigin: mockClients.find(c => c.id === data.clientId)?.origin || '',
+      companyId: "company-1",
+      clientId: data.clientId || "",
+      clientName: data.clientName || "",
+      clientOrigin:
+        mockClients.find((c) => c.id === data.clientId)?.origin || "",
       date: data.date || new Date(),
       items: data.items || [],
       totalValue: data.totalValue || 0,
-      notes: data.notes || '',
+      notes: data.notes || "",
       createdAt: new Date(),
-    }
-    setPayments([newPayment, ...payments])
-  }
+    };
+    setPayments([newPayment, ...payments]);
+  };
 
   const filteredCredits = credits.filter((credit) => {
-    if (originFilter === 'all') return true
-    return credit.clientOrigin === originFilter
-  })
+    if (originFilter === "all") return true;
+    return credit.clientOrigin === originFilter;
+  });
 
   const handleEditPayment = async (id: string, data: Partial<ScrapPayment>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 500));
     setPayments(
       payments.map((p) => {
         if (p.id === id) {
-          return { ...p, ...data }
+          return { ...p, ...data };
         }
-        return p
-      })
-    )
-  }
+        return p;
+      }),
+    );
+  };
 
   const handleEditCredit = async (id: string, data: Partial<Credit>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 500));
     setCredits(
       credits.map((c) => {
         if (c.id === id) {
-          return { ...c, ...data }
+          return { ...c, ...data };
         }
-        return c
-      })
-    )
-  }
+        return c;
+      }),
+    );
+  };
 
-  const handleUpdateStatus = async (id: string, status: Credit['status']) => {
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    setCredits(credits.map((c) => (c.id === id ? { ...c, status } : c)))
-  }
+  const handleUpdateStatus = async (id: string, status: Credit["status"]) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    setCredits(credits.map((c) => (c.id === id ? { ...c, status } : c)));
+  };
 
-  const getStatusIcon = (status: Credit['status']) => {
+  const getStatusIcon = (status: Credit["status"]) => {
     switch (status) {
-      case 'paid':
-        return <CheckCircle className="w-3 h-3" />
-      case 'partial':
-        return <Clock className="w-3 h-3" />
+      case "paid":
+        return <CheckCircle className="w-3 h-3" />;
+      case "partial":
+        return <Clock className="w-3 h-3" />;
       default:
-        return <AlertCircle className="w-3 h-3" />
+        return <AlertCircle className="w-3 h-3" />;
     }
-  }
+  };
 
   const columnsCredits: Column<Credit>[] = [
     {
-      key: 'date',
-      header: 'Fecha',
+      key: "date",
+      header: "Fecha",
       cell: (row) => formatDate(row.date),
     },
     {
-      key: 'clientName',
-      header: 'Cliente',
+      key: "clientName",
+      header: "Cliente",
       cell: (row) => (
-        <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
+        <Link
+          href={`/clients/${row.clientId}`}
+          className="font-medium hover:underline"
+        >
           {row.clientName}
         </Link>
       ),
@@ -166,54 +172,55 @@ export default function ClientDetailPage({
       ),
     }, */
     {
-      key: 'items',
-      header: 'Productos', // Changed from 'Product' to match functionality
+      key: "items",
+      header: "Productos", // Changed from 'Product' to match functionality
       cell: (row) => (
         <div className="flex flex-col gap-1">
-            {row.items && row.items.length > 0 ? (
-                row.items.map((item, idx) => (
-                    <span key={idx} className="block text-sm truncate max-w-[250px]">
-                        • {item.description}
-                    </span>
-                ))
-            ) : (
-                <span className="text-muted-foreground italic">Sin productos</span>
-            )}
-            {/* Fallback for old data if any */}
-            {/* @ts-ignore */}
-            {row.productDescription && <span className="block text-sm text-yellow-600">Old: {row.productDescription}</span>}
+          {row.items && row.items.length > 0 ? (
+            row.items.map((item, idx) => (
+              <span key={idx} className="block text-sm truncate max-w-[250px]">
+                • {item.description}
+              </span>
+            ))
+          ) : (
+            <span className="text-muted-foreground italic">Sin productos</span>
+          )}
         </div>
       ),
     },
     {
-      key: 'amount',
-      header: 'Monto Total',
+      key: "amount",
+      header: "Monto Total",
       cell: (row) => (
         <span className="font-bold">{formatCurrency(row.amount)}</span>
       ),
     },
     {
-      key: 'status',
-      header: 'Estado',
+      key: "status",
+      header: "Estado",
       cell: (row) => (
         <Badge
           variant={
-            row.status === 'paid'
-              ? 'default'
-              : row.status === 'partial'
-              ? 'secondary'
-              : 'destructive'
+            row.status === "paid"
+              ? "default"
+              : row.status === "partial"
+                ? "secondary"
+                : "destructive"
           }
           className="gap-1"
         >
           {getStatusIcon(row.status)}
-          {row.status === 'paid' ? 'Pagado' : row.status === 'partial' ? 'Parcial' : 'Pendiente'}
+          {row.status === "paid"
+            ? "Pagado"
+            : row.status === "partial"
+              ? "Parcial"
+              : "Pendiente"}
         </Badge>
       ),
     },
     {
-      key: 'actions',
-      header: 'Actions',
+      key: "actions",
+      header: "Actions",
       sortable: false,
       searchable: false,
       cell: (row) => (
@@ -225,30 +232,30 @@ export default function ClientDetailPage({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/clients/${row.clientId}`}>
-                <Eye className="w-4 h-4 mr-2" />
-                View Client
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setEditingCredit(row)}>
               <Pencil className="w-4 h-4 mr-2" />
               Editar
             </DropdownMenuItem>
-            {row.status !== 'paid' && (
+            {row.status !== "paid" && (
               <>
-                <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'partial')}>
+                <DropdownMenuItem
+                  onClick={() => handleUpdateStatus(row.id, "partial")}
+                >
                   <Clock className="w-4 h-4 mr-2" />
                   Mark Partial
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'paid')}>
+                <DropdownMenuItem
+                  onClick={() => handleUpdateStatus(row.id, "paid")}
+                >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Mark Paid
                 </DropdownMenuItem>
               </>
             )}
-            {row.status === 'paid' && (
-              <DropdownMenuItem onClick={() => handleUpdateStatus(row.id, 'pending')}>
+            {row.status === "paid" && (
+              <DropdownMenuItem
+                onClick={() => handleUpdateStatus(row.id, "pending")}
+              >
                 <AlertCircle className="w-4 h-4 mr-2" />
                 Mark Pending
               </DropdownMenuItem>
@@ -257,54 +264,61 @@ export default function ClientDetailPage({
         </DropdownMenu>
       ),
     },
-  ]
+  ];
 
   const columnsPayments: Column<ScrapPayment>[] = [
     {
-      key: 'date',
-      header: 'Fecha',
+      key: "date",
+      header: "Fecha",
       cell: (row) => formatDate(row.date),
     },
     {
-      key: 'clientName',
-      header: 'Cliente',
+      key: "clientName",
+      header: "Cliente",
       cell: (row) => (
-        <Link href={`/clients/${row.clientId}`} className="font-medium hover:underline">
+        <Link
+          href={`/clients/${row.clientId}`}
+          className="font-medium hover:underline"
+        >
           {row.clientName}
         </Link>
       ),
     },
     {
-      key: 'items',
-      header: 'Detalle de Chatarra',
+      key: "items",
+      header: "Detalle de Chatarra",
       sortable: false,
       cell: (row) => (
-         <div className="flex flex-col gap-1">
-            {row.items && row.items.length > 0 ? (
-                row.items.map((item, idx) => (
-                    <span key={idx} className="block text-sm">
-                        • {item.scrapName}: {formatCurrency(item.amount)}
-                    </span>
-                ))
-            ) : (
-                <span className="text-muted-foreground italic">Sin detalles</span>
-            )}
-             {/* Fallback for old data if needed */}
-             {/* @ts-ignore */}
-             {row.scrapDetails && <span className="text-xs text-yellow-600">Old data present</span>}
+        <div className="flex flex-col gap-1">
+          {row.items && row.items.length > 0 ? (
+            row.items.map((item, idx) => (
+              <span key={idx} className="block text-sm">
+                • {item.scrapName}: {formatCurrency(item.amount)}
+              </span>
+            ))
+          ) : (
+            <span className="text-muted-foreground italic">Sin detalles</span>
+          )}
+          {/* Fallback for old data if needed */}
+          {/* @ts-ignore */}
+          {row.scrapDetails && (
+            <span className="text-xs text-yellow-600">Old data present</span>
+          )}
         </div>
       ),
     },
     {
-      key: 'totalValue',
-      header: 'Valor Total',
+      key: "totalValue",
+      header: "Valor Total",
       cell: (row) => (
-        <span className="font-medium text-primary">{formatCurrency(row.totalValue)}</span>
+        <span className="font-medium text-primary">
+          {formatCurrency(row.totalValue)}
+        </span>
       ),
     },
     {
-      key: 'actions',
-      header: 'Acciones',
+      key: "actions",
+      header: "Acciones",
       sortable: false,
       searchable: false,
       cell: (row) => (
@@ -316,12 +330,6 @@ export default function ClientDetailPage({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/clients/${row.clientId}`}>
-                <Eye className="w-4 h-4 mr-2" />
-                Ver Cliente
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setEditingPayment(row)}>
               <Pencil className="w-4 h-4 mr-2" />
               Editar
@@ -330,7 +338,7 @@ export default function ClientDetailPage({
         </DropdownMenu>
       ),
     },
-  ]
+  ];
 
   const financialSummary = useMemo(() => {
     const totalCredit = clientCredits.reduce((sum, c) => sum + c.amount, 0);
@@ -407,10 +415,18 @@ export default function ClientDetailPage({
 
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="grid w-full grid-cols-4 max-w-[600px]">
-              <TabsTrigger value="overview" className="text-xs md:text-sm">Info del negocio</TabsTrigger>
-              <TabsTrigger value="credits" className="text-xs md:text-sm">Creditos</TabsTrigger>
-              <TabsTrigger value="payments" className="text-xs md:text-sm">Pagos con chatarra</TabsTrigger>
-              <TabsTrigger value="summary" className="text-xs md:text-sm">Resumen</TabsTrigger>
+              <TabsTrigger value="overview" className="text-xs md:text-sm">
+                Info del negocio
+              </TabsTrigger>
+              <TabsTrigger value="credits" className="text-xs md:text-sm">
+                Creditos
+              </TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs md:text-sm">
+                Pagos con chatarra
+              </TabsTrigger>
+              <TabsTrigger value="summary" className="text-xs md:text-sm">
+                Resumen
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
@@ -508,7 +524,10 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <CreditFormDialog clients={mockClients} onSubmit={handleAddCredit} />
+                  <CreditFormDialog
+                    clients={mockClients}
+                    onSubmit={handleAddCredit}
+                  />
                 </CardHeader>
                 <CardContent>
                   <DataTable
@@ -530,7 +549,10 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <PaymentFormDialog clients={mockClients} onSubmit={handleAddPayment} />
+                  <PaymentFormDialog
+                    clients={mockClients}
+                    onSubmit={handleAddPayment}
+                  />
                 </CardHeader>
                 <CardContent>
                   <DataTable
@@ -634,9 +656,9 @@ export default function ClientDetailPage({
         onOpenChange={(open) => !open && setEditingPayment(null)}
         onSubmit={(data) => {
           if (editingPayment) {
-            return handleEditPayment(editingPayment.id, data)
+            return handleEditPayment(editingPayment.id, data);
           }
-          return Promise.resolve()
+          return Promise.resolve();
         }}
       />
     </>
