@@ -163,7 +163,7 @@ export function DataTable<T>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results found.
+                  No se encontraron resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -173,7 +173,7 @@ export function DataTable<T>({
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Rows per page:</span>
+          <span>Registros por página:</span>
           <Select
             value={String(pageSize)}
             onValueChange={(value) => {
@@ -181,7 +181,7 @@ export function DataTable<T>({
               setCurrentPage(1)
             }}
           >
-            <SelectTrigger className="w-16 h-8">
+            <SelectTrigger className="w-fit h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -194,7 +194,7 @@ export function DataTable<T>({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages || 1}
+            Página {currentPage} de {totalPages || 1}
           </span>
           <Button
             variant="outline"
