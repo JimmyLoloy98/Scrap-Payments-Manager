@@ -62,6 +62,42 @@ export default function ClientDetailPage({
   const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
   const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
 
+  const handleAddCredit = async (data: Partial<Credit>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const selectedClient = mockClients.find((c) => c.id === data.clientId)
+    const newCredit: Credit = {
+      id: String(credits.length + 1),
+      companyId: 'company-1',
+      clientId: data.clientId || '',
+      clientName: data.clientName || '',
+      clientOrigin: selectedClient?.origin || '',
+      date: data.date || new Date(),
+      items: data.items || [],
+      amount: data.amount || 0,
+      status: 'pending',
+      notes: data.notes || '',
+      createdAt: new Date(),
+    }
+    setCredits([newCredit, ...credits])
+  }
+
+  const handleAddPayment = async (data: Partial<ScrapPayment>) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const newPayment: ScrapPayment = {
+      id: String(payments.length + 1),
+      companyId: 'company-1',
+      clientId: data.clientId || '',
+      clientName: data.clientName || '',
+      clientOrigin: mockClients.find(c => c.id === data.clientId)?.origin || '',
+      date: data.date || new Date(),
+      items: data.items || [],
+      totalValue: data.totalValue || 0,
+      notes: data.notes || '',
+      createdAt: new Date(),
+    }
+    setPayments([newPayment, ...payments])
+  }
+
   const filteredCredits = credits.filter((credit) => {
     if (originFilter === 'all') return true
     return credit.clientOrigin === originFilter
@@ -472,18 +508,7 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <CreditFormDialog
-                    clients={mockClients}
-                    credit={editingCredit || undefined}
-                    open={!!editingCredit}
-                    onOpenChange={(open) => !open && setEditingCredit(null)}
-                    onSubmit={(data) => {
-                      if (editingCredit) {
-                        return handleEditCredit(editingCredit.id, data);
-                      }
-                      return Promise.resolve();
-                    }}
-                  />
+                  <CreditFormDialog clients={mockClients} onSubmit={handleAddCredit} />
                 </CardHeader>
                 <CardContent>
                   <DataTable
@@ -505,18 +530,7 @@ export default function ClientDetailPage({
                     </CardDescription>
                   </div>
 
-                  <PaymentFormDialog
-                    clients={mockClients}
-                    payment={editingPayment || undefined}
-                    open={!!editingPayment}
-                    onOpenChange={(open) => !open && setEditingPayment(null)}
-                    onSubmit={(data) => {
-                      if (editingPayment) {
-                        return handleEditPayment(editingPayment.id, data)
-                      }
-                      return Promise.resolve()
-                    }}
-                  />
+                  <PaymentFormDialog clients={mockClients} onSubmit={handleAddPayment} />
                 </CardHeader>
                 <CardContent>
                   <DataTable
@@ -597,6 +611,34 @@ export default function ClientDetailPage({
           </Tabs>
         </div>
       </div>
+
+      <CreditFormDialog
+        clients={mockClients}
+        trigger={<span className="hidden" />}
+        credit={editingCredit || undefined}
+        open={!!editingCredit}
+        onOpenChange={(open) => !open && setEditingCredit(null)}
+        onSubmit={(data) => {
+          if (editingCredit) {
+            return handleEditCredit(editingCredit.id, data);
+          }
+          return Promise.resolve();
+        }}
+      />
+
+      <PaymentFormDialog
+        clients={mockClients}
+        trigger={<span className="hidden" />}
+        payment={editingPayment || undefined}
+        open={!!editingPayment}
+        onOpenChange={(open) => !open && setEditingPayment(null)}
+        onSubmit={(data) => {
+          if (editingPayment) {
+            return handleEditPayment(editingPayment.id, data)
+          }
+          return Promise.resolve()
+        }}
+      />
     </>
   );
 }
