@@ -1,17 +1,24 @@
+// API Response types
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  error?: string;
+}
+
 // Origin types (Lugares de procedencia)
 export interface Origin {
   id: string
   companyId: string
   name: string
   description: string
-  createdAt: Date
+  createdAt: string | Date
 }
 
 // User and Company types
 export interface Company {
   id: string
   name: string
-  createdAt: Date
+  createdAt: string | Date
 }
 
 export interface User {
@@ -39,7 +46,7 @@ export interface Client {
   origin: string // Lugar de procedencia
   notes: string
   currentDebt: number
-  createdAt: Date
+  createdAt: string | Date
 }
 
 // Scrap Type (Tipos de Chatarra)
@@ -48,7 +55,7 @@ export interface ScrapType {
   companyId: string
   name: string
   description: string
-  createdAt: Date
+  createdAt: string | Date
 }
 
 // Credit types
@@ -63,12 +70,12 @@ export interface Credit {
   clientId: string
   clientName: string
   clientOrigin: string // Lugar de procedencia del cliente
-  date: Date
+  date: string | Date
   items: CreditItem[]
   amount: number // Total amount (sum of items)
   status: 'pending' | 'partial' | 'paid'
   notes: string
-  createdAt: Date
+  createdAt: string | Date
 }
 
 // Scrap Payment types
@@ -84,11 +91,11 @@ export interface ScrapPayment {
   clientId: string
   clientName: string
   clientOrigin: string
-  date: Date
+  date: string | Date
   items: ScrapItem[]
   totalValue: number
   notes: string
-  createdAt: Date
+  createdAt: string | Date
 }
 
 // Dashboard stats
@@ -106,5 +113,5 @@ export interface RecentActivity {
   clientName: string
   description: string
   amount: number
-  date: Date
+  date: string | Date
 }
