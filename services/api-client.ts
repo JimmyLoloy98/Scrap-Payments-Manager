@@ -19,6 +19,8 @@ async function request<T>(
 
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
+  headers.set('Accept', 'application/json');
+
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
@@ -37,7 +39,17 @@ async function request<T>(
     } catch {
       errorData = { message: response.statusText };
     }
-    throw new ApiError(response.status, errorData.message || 'Error en la petición', errorData);
+
+    // Si es un error de validación de Laravel (422), extraemos los detalles
+    let finalMessage = errorData.message || 'Error en la petición';
+    if (response.status === 422 && errorData.errors) {
+      const firstError = Object.values(errorData.errors)[0] as string[];
+      if (firstError && firstError.length > 0) {
+        finalMessage = firstError[0];
+      }
+    }
+
+    throw new ApiError(response.status, finalMessage, errorData);
   }
 
   if (response.status === 204) {

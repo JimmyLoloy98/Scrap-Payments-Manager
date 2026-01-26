@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { login, isLoading } = useAuth()
+  const { login, isLoading, error: authError } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,10 +30,15 @@ export default function LoginPage() {
     const success = await login(email, password)
     if (success) {
       router.push('/clients')
-    } else {
-      setError('Invalid credentials. Please try again.')
     }
   }
+
+  // Effect to sync authError with local error
+  React.useEffect(() => {
+    if (authError) {
+      setError(authError)
+    }
+  }, [authError])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -91,9 +96,6 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo: Use any email and password to login</p>
-          </div>
         </CardContent>
       </Card>
     </div>
