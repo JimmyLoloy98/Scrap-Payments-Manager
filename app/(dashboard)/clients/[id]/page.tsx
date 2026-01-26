@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useMemo, useState } from "react";
+import { use, useMemo, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { DashboardHeader } from "@/components/dashboard-header";
 import {
@@ -44,6 +44,11 @@ import { DataTable, type Column } from "@/components/data-table";
 import { Credit, ScrapPayment } from "@/lib/types";
 import { PaymentFormDialog } from "@/components/payments/payment-form-dialog";
 import { CreditFormDialog } from "@/components/credits/credit-form-dialog";
+import { Loader2 } from "lucide-react";
+import { clientsService, creditsService, paymentsService } from "@/services";
+import { useClients } from "@/contexts/clients-context";
+
+
 
 export default function ClientDetailPage({
   params,
@@ -51,88 +56,60 @@ export default function ClientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { clients } = useClients();
+  const [client, setClient] = useState<any>(null);
+  const [credits, setCredits] = useState<Credit[]>([]);
+  const [payments, setPayments] = useState<ScrapPayment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const client = mockClients.find((c) => c.id === id);
-  const clientCredits = mockCredits.filter((c) => c.clientId === id);
-  const clientPayments = mockScrapPayments.filter((p) => p.clientId === id);
-  const [credits, setCredits] = useState<Credit[]>(mockCredits);
-  const [originFilter, setOriginFilter] = useState<string>("all");
-  const [payments, setPayments] = useState<ScrapPayment[]>(mockScrapPayments);
-
-  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(
-    null,
-  );
+  const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
   const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
 
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [clientData, creditsData, paymentsData] = await Promise.all([
+        clientsService.getById(id),
+        creditsService.getAll(id),
+        paymentsService.getAll(id),
+      ]);
+      setClient(clientData);
+      setCredits(creditsData);
+      setPayments(paymentsData);
+    } catch (error) {
+      console.error("Error loading client details:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
   const handleAddCredit = async (data: Partial<Credit>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const selectedClient = mockClients.find((c) => c.id === data.clientId);
-    const newCredit: Credit = {
-      id: String(credits.length + 1),
-      companyId: "company-1",
-      clientId: data.clientId || "",
-      clientName: data.clientName || "",
-      clientOrigin: selectedClient?.origin || "",
-      date: data.date || new Date(),
-      items: data.items || [],
-      amount: data.amount || 0,
-      status: "pending",
-      notes: data.notes || "",
-      createdAt: new Date(),
-    };
-    setCredits([newCredit, ...credits]);
+    await creditsService.create({ ...data, clientId: id });
+    await loadData();
   };
 
   const handleAddPayment = async (data: Partial<ScrapPayment>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const newPayment: ScrapPayment = {
-      id: String(payments.length + 1),
-      companyId: "company-1",
-      clientId: data.clientId || "",
-      clientName: data.clientName || "",
-      clientOrigin:
-        mockClients.find((c) => c.id === data.clientId)?.origin || "",
-      date: data.date || new Date(),
-      items: data.items || [],
-      totalValue: data.totalValue || 0,
-      notes: data.notes || "",
-      createdAt: new Date(),
-    };
-    setPayments([newPayment, ...payments]);
+    await paymentsService.create({ ...data, clientId: id });
+    await loadData();
   };
 
-  const filteredCredits = credits.filter((credit) => {
-    if (originFilter === "all") return true;
-    return credit.clientOrigin === originFilter;
-  });
-
-  const handleEditPayment = async (id: string, data: Partial<ScrapPayment>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setPayments(
-      payments.map((p) => {
-        if (p.id === id) {
-          return { ...p, ...data };
-        }
-        return p;
-      }),
-    );
+  const handleEditPayment = async (editId: string, data: Partial<ScrapPayment>) => {
+    await paymentsService.update(editId, data);
+    await loadData();
   };
 
-  const handleEditCredit = async (id: string, data: Partial<Credit>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setCredits(
-      credits.map((c) => {
-        if (c.id === id) {
-          return { ...c, ...data };
-        }
-        return c;
-      }),
-    );
+  const handleEditCredit = async (editId: string, data: Partial<Credit>) => {
+    await creditsService.update(editId, data);
+    await loadData();
   };
 
-  const handleUpdateStatus = async (id: string, status: Credit["status"]) => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    setCredits(credits.map((c) => (c.id === id ? { ...c, status } : c)));
+  const handleUpdateStatus = async (editId: string, status: Credit["status"]) => {
+    await creditsService.updateStatus(editId, status);
+    await loadData();
   };
 
   const getStatusIcon = (status: Credit["status"]) => {
@@ -341,14 +318,22 @@ export default function ClientDetailPage({
   ];
 
   const financialSummary = useMemo(() => {
-    const totalCredit = clientCredits.reduce((sum, c) => sum + c.amount, 0);
-    const totalPaid = clientPayments.reduce((sum, p) => sum + p.totalValue, 0);
+    const totalCredit = credits.reduce((sum, c) => sum + c.amount, 0);
+    const totalPaid = payments.reduce((sum, p) => sum + p.totalValue, 0);
     return {
       totalCredit,
       totalPaid,
       pendingDebt: totalCredit - totalPaid,
     };
-  }, [clientCredits, clientPayments]);
+  }, [credits, payments]);
+
+  if (isLoading && !client) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!client) {
     return (
@@ -525,15 +510,16 @@ export default function ClientDetailPage({
                   </div>
 
                   <CreditFormDialog
-                    clients={mockClients}
+                    clients={clients}
                     onSubmit={handleAddCredit}
                   />
                 </CardHeader>
                 <CardContent>
                   <DataTable
-                    data={filteredCredits}
+                    data={credits}
                     columns={columnsCredits}
                     searchPlaceholder="Search credits..."
+                    isLoading={isLoading}
                   />
                 </CardContent>
               </Card>
@@ -550,7 +536,7 @@ export default function ClientDetailPage({
                   </div>
 
                   <PaymentFormDialog
-                    clients={mockClients}
+                    clients={clients}
                     onSubmit={handleAddPayment}
                   />
                 </CardHeader>
@@ -559,6 +545,7 @@ export default function ClientDetailPage({
                     data={payments}
                     columns={columnsPayments}
                     searchPlaceholder="Search payments..."
+                    isLoading={isLoading}
                   />
                 </CardContent>
               </Card>
@@ -578,7 +565,7 @@ export default function ClientDetailPage({
                       {formatCurrency(financialSummary.totalCredit)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      De {clientCredits.length} credito(s)
+                      De {credits.length} credito(s)
                     </p>
                   </CardContent>
                 </Card>
@@ -595,7 +582,7 @@ export default function ClientDetailPage({
                       {formatCurrency(financialSummary.totalPaid)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      De {clientPayments.length} pago(s)
+                      De {payments.length} pago(s)
                     </p>
                   </CardContent>
                 </Card>
@@ -635,7 +622,7 @@ export default function ClientDetailPage({
       </div>
 
       <CreditFormDialog
-        clients={mockClients}
+        clients={clients}
         trigger={<span className="hidden" />}
         credit={editingCredit || undefined}
         open={!!editingCredit}
@@ -649,7 +636,7 @@ export default function ClientDetailPage({
       />
 
       <PaymentFormDialog
-        clients={mockClients}
+        clients={clients}
         trigger={<span className="hidden" />}
         payment={editingPayment || undefined}
         open={!!editingPayment}

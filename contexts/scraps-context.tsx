@@ -20,7 +20,10 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
   const [total, setTotal] = useState(0)
 
   const refreshScraps = useCallback(async () => {
-    setIsLoading(true)
+    // Only show global loading if we have no data yet
+    if (scraps.length === 0) {
+      setIsLoading(true)
+    }
     try {
       const response = await scrapsService.getAll()
       setScraps(response.scraps)
@@ -30,7 +33,7 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [scraps.length])
 
   useEffect(() => {
     refreshScraps()

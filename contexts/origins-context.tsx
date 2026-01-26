@@ -21,7 +21,10 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
   const [total, setTotal] = useState(0)
 
   const refreshOrigins = useCallback(async () => {
-    setIsLoading(true)
+    // Only show global loading if we have no data yet
+    if (origins.length === 0) {
+      setIsLoading(true)
+    }
     try {
       const response = await originsService.getAll()
       setOrigins(response.origins)
@@ -31,7 +34,7 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [origins.length])
 
   useEffect(() => {
     refreshOrigins()

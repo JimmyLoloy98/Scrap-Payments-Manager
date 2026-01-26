@@ -25,6 +25,7 @@ import {
 import { MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react'
 import { mockClients } from '@/lib/mock-data'
 import { useOrigins } from '@/contexts/origins-context'
+import { useClients } from '@/contexts/clients-context'
 import {
   Select,
   SelectContent,
@@ -37,56 +38,23 @@ import { formatCurrency } from '@/lib/utils'
 
 export default function ClientsPage() {
   const { origins } = useOrigins()
-  const [clients, setClients] = useState<Client[]>(mockClients)
-  const [deleteClient, setDeleteClient] = useState<Client | null>(null)
+  const { clients, addClient, updateClient, deleteClient, isLoading: clientsLoading } = useClients()
+  const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [originFilter, setOriginFilter] = useState<string>('all')
 
   const handleAddClient = async (data: Partial<Client>) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const newClient: Client = {
-      id: String(clients.length + 1),
-      companyId: 'company-1',
-      name: data.businessName || data.name || '',
-      businessName: data.businessName || '',
-      ownerName: data.ownerName || '',
-      dni: data.dni || '',
-      ruc: data.ruc || '',
-      phone: data.phone || '',
-      email: data.email || '',
-      address: data.address || '',
-      origin: data.origin || '',
-      notes: data.notes || '',
-      photoUrl: data.photoUrl || '',
-      currentDebt: 0,
-      createdAt: new Date(),
-    }
-    setClients([...clients, newClient])
+    await addClient(data)
   }
 
-  const handleEditClient = async (id: string, data: Partial<Client>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setClients(
-      clients.map((c) => {
-          if (c.id === id) {
-              // Update name if businessName is updated, for compatibility
-              const updatedData = { ...data };
-              if (updatedData.businessName) {
-                  updatedData.name = updatedData.businessName;
-              }
-              return { ...c, ...updatedData };
-          }
-          return c;
-      })
-    )
+  const handleEditClient = async (id: string | number, data: Partial<Client>) => {
+    await updateClient(id, data)
   }
 
   const handleDeleteClient = async () => {
-    if (!deleteClient) return
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setClients(clients.filter((c) => c.id !== deleteClient.id))
-    setDeleteClient(null)
+    if (!deleteTarget) return
+    await deleteClient(deleteTarget.id)
+    setDeleteTarget(null)
   }
 
   const filteredClients = clients.filter((client) => {
@@ -149,7 +117,7 @@ export default function ClientsPage() {
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onSelect={() => setDeleteClient(row)}
+              onSelect={() => setDeleteTarget(row)}
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Eliminar
@@ -208,16 +176,17 @@ export default function ClientsPage() {
             data={filteredClients}
             columns={columns}
             searchPlaceholder="Buscar negocios..."
+            isLoading={clientsLoading}
           />
         </div>
       </div>
 
-      <AlertDialog open={!!deleteClient} onOpenChange={() => setDeleteClient(null)}>
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminar Negocio</AlertDialogTitle>
             <AlertDialogDescription>
-              Estas seguro de que deseas eliminar a {deleteClient?.businessName || deleteClient?.name}? Esta accion no se
+              Estas seguro de que deseas eliminar a {deleteTarget?.businessName || deleteTarget?.name}? Esta accion no se
               puede deshacer y eliminara todos los registros asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>

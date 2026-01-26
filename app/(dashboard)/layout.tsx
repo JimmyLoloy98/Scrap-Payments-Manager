@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { OriginsProvider } from '@/contexts/origins-context'
 import { ScrapsProvider } from '@/contexts/scraps-context'
+import { ClientsProvider } from '@/contexts/clients-context'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Loader2 } from 'lucide-react'
@@ -47,12 +48,12 @@ export default function DashboardLayout({
   return (
     <OriginsProvider>
       <ScrapsProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
+        <ClientsProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>{children}</SidebarInset>
+          </SidebarProvider>
+        </ClientsProvider>
       </ScrapsProvider>
     </OriginsProvider>
   )

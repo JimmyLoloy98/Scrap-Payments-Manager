@@ -9,7 +9,7 @@ export const originsService = {
     apiClient.post<Origin>('/origins', data),
 
   update: (id: string | number, data: Partial<Origin>) =>
-    apiClient.patch<Origin>(`/origins/${id}`, data),
+    apiClient.put<Origin>(`/origins/${id}`, data),
 
   delete: (id: string | number) =>
     apiClient.delete(`/origins/${id}`),
