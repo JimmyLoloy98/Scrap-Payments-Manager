@@ -163,7 +163,7 @@ export function DataTable<T>({
               </TableRow>
             ) : paginatedData.length > 0 ? (
               paginatedData.map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={(row as any).id || index}>
                   {columns.map((column) => (
                     <TableCell key={column.key}>
                       {column.cell ? column.cell(row) : String((row as any)[column.key] ?? '')}

@@ -27,14 +27,14 @@ import type { Origin } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 export default function OriginsPage() {
-  const { origins, addOrigin, updateOrigin, deleteOrigin } = useOrigins()
+  const { origins, addOrigin, updateOrigin, deleteOrigin, isLoading, total } = useOrigins()
   const [deleteTarget, setDeleteTarget] = useState<Origin | null>(null)
 
   const handleAddOrigin = async (data: Partial<Origin>) => {
     await addOrigin(data)
   }
 
-  const handleEditOrigin = async (id: string, data: Partial<Origin>) => {
+  const handleEditOrigin = async (id: string | number, data: Partial<Origin>) => {
     await updateOrigin(id, data)
   }
 
@@ -127,13 +127,14 @@ export default function OriginsPage() {
 
           <div className="rounded-lg border bg-card p-4 max-w-xs">
             <p className="text-sm text-muted-foreground">Total de Zonas</p>
-            <p className="text-2xl font-bold">{origins.length}</p>
+            <p className="text-2xl font-bold">{total}</p>
           </div>
 
           <DataTable
             data={origins}
             columns={columns}
             searchPlaceholder="Buscar lugares..."
+            isLoading={isLoading}
           />
         </div>
       </div>

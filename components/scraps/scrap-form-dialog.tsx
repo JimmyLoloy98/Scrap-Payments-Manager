@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,6 +32,16 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
   })
 
   const isEditing = !!scrap
+
+  // Sync form data with scrap prop
+  useEffect(() => {
+    if (scrap) {
+      setFormData({
+        name: scrap.name || '',
+        description: scrap.description || '',
+      })
+    }
+  }, [scrap])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

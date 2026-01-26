@@ -9,7 +9,7 @@ export const scrapsService = {
     apiClient.post<ScrapType>('/scraps', data),
 
   update: (id: string | number, data: Partial<ScrapType>) =>
-    apiClient.put<ScrapType>(`/scraps/${id}`, data),
+    apiClient.patch<ScrapType>(`/scraps/${id}`, data),
 
   delete: (id: string | number) =>
     apiClient.delete(`/scraps/${id}`),

@@ -26,6 +26,7 @@ async function request<T>(
   }
 
   const config: RequestInit = {
+    cache: 'no-store', // Disable caching to ensure fresh data after mutations
     ...options,
     headers,
   };

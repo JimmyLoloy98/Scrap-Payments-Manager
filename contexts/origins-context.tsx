@@ -1,45 +1,71 @@
-'use client'
-
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from 'react'
 import type { Origin } from '@/lib/types'
-import { mockOrigins } from '@/lib/mock-data'
+import { originsService } from '@/services/origins.service'
 
 interface OriginsContextType {
   origins: Origin[]
+  isLoading: boolean
+  total: number
+  refreshOrigins: () => Promise<void>
   addOrigin: (data: Partial<Origin>) => Promise<void>
-  updateOrigin: (id: string, data: Partial<Origin>) => Promise<void>
-  deleteOrigin: (id: string) => Promise<void>
+  updateOrigin: (id: string | number, data: Partial<Origin>) => Promise<void>
+  deleteOrigin: (id: string | number) => Promise<void>
   getOriginNames: () => string[]
 }
 
 const OriginsContext = createContext<OriginsContextType | undefined>(undefined)
 
 export function OriginsProvider({ children }: { children: ReactNode }) {
-  const [origins, setOrigins] = useState<Origin[]>(mockOrigins)
+  const [origins, setOrigins] = useState<Origin[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [total, setTotal] = useState(0)
+
+  const refreshOrigins = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const response = await originsService.getAll()
+      setOrigins(response.origins)
+      setTotal(response.total)
+    } catch (error) {
+      console.error('Error fetching origins:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    refreshOrigins()
+  }, [refreshOrigins])
 
   const addOrigin = useCallback(async (data: Partial<Origin>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const newOrigin: Origin = {
-      id: String(Date.now()),
-      companyId: 'company-1',
-      name: data.name || '',
-      description: data.description || '',
-      createdAt: new Date(),
+    try {
+      await originsService.create(data)
+      await refreshOrigins()
+    } catch (error) {
+      console.error('Error adding origin:', error)
+      throw error
     }
-    setOrigins((prev) => [...prev, newOrigin])
-  }, [])
+  }, [refreshOrigins])
 
-  const updateOrigin = useCallback(async (id: string, data: Partial<Origin>) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setOrigins((prev) =>
-      prev.map((origin) => (origin.id === id ? { ...origin, ...data } : origin))
-    )
-  }, [])
+  const updateOrigin = useCallback(async (id: string | number, data: Partial<Origin>) => {
+    try {
+      await originsService.update(id, data)
+      await refreshOrigins()
+    } catch (error) {
+      console.error('Error updating origin:', error)
+      throw error
+    }
+  }, [refreshOrigins])
 
-  const deleteOrigin = useCallback(async (id: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setOrigins((prev) => prev.filter((origin) => origin.id !== id))
-  }, [])
+  const deleteOrigin = useCallback(async (id: string | number) => {
+    try {
+      await originsService.delete(id)
+      await refreshOrigins()
+    } catch (error) {
+      console.error('Error deleting origin:', error)
+      throw error
+    }
+  }, [refreshOrigins])
 
   const getOriginNames = useCallback(() => {
     return origins.map((origin) => origin.name)
@@ -49,6 +75,9 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
     <OriginsContext.Provider
       value={{
         origins,
+        isLoading,
+        total,
+        refreshOrigins,
         addOrigin,
         updateOrigin,
         deleteOrigin,

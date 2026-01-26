@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -34,6 +34,16 @@ export function OriginFormDialog({ origin, onSubmit, trigger }: OriginFormDialog
   })
 
   const isEditing = !!origin
+
+  // Sync form data with origin prop
+  useEffect(() => {
+    if (origin) {
+      setFormData({
+        name: origin.name || '',
+        description: origin.description || '',
+      })
+    }
+  }, [origin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
