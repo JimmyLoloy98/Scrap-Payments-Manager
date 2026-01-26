@@ -35,6 +35,7 @@ interface DataTableProps<T> {
   columns: Column<T>[]
   pageSize?: number
   searchPlaceholder?: string
+  isLoading?: boolean
 }
 
 export function DataTable<T>({
@@ -42,6 +43,7 @@ export function DataTable<T>({
   columns,
   pageSize: initialPageSize = 10,
   searchPlaceholder = 'Search...',
+  isLoading = false,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<string | null>(null)
@@ -150,7 +152,16 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.length > 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    Cargando datos...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : paginatedData.length > 0 ? (
               paginatedData.map((row, index) => (
                 <TableRow key={index}>
                   {columns.map((column) => (

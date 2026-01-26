@@ -7,11 +7,19 @@ export interface ApiResponse<T> {
 
 // Origin types (Lugares de procedencia)
 export interface Origin {
-  id: string
-  companyId: string
+  id: string | number
+  companyId: string | number
   name: string
   description: string
   createdAt: string | Date
+  updatedAt?: string | Date
+}
+
+export interface OriginsResponse {
+  origins: Origin[]
+  total: number
+  page: number
+  limit: number
 }
 
 // User and Company types
@@ -49,13 +57,20 @@ export interface Client {
   createdAt: string | Date
 }
 
-// Scrap Type (Tipos de Chatarra)
 export interface ScrapType {
-  id: string
-  companyId: string
+  id: string | number
+  companyId: string | number
   name: string
   description: string
   createdAt: string | Date
+  updatedAt?: string | Date
+}
+
+export interface ScrapsResponse {
+  scraps: ScrapType[]
+  total: number
+  page: number
+  limit: number
 }
 
 // Credit types

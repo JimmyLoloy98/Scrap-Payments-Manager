@@ -27,14 +27,14 @@ import type { ScrapType } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 export default function ScrapsPage() {
-  const { scraps, addScrap, updateScrap, deleteScrap } = useScraps()
+  const { scraps, addScrap, updateScrap, deleteScrap, isLoading, total } = useScraps()
   const [deleteTarget, setDeleteTarget] = useState<ScrapType | null>(null)
 
   const handleAddScrap = async (data: Partial<ScrapType>) => {
     await addScrap(data)
   }
 
-  const handleEditScrap = async (id: string, data: Partial<ScrapType>) => {
+  const handleEditScrap = async (id: string | number, data: Partial<ScrapType>) => {
     await updateScrap(id, data)
   }
 
@@ -127,13 +127,14 @@ export default function ScrapsPage() {
 
           <div className="rounded-lg border bg-card p-4 max-w-xs">
             <p className="text-sm text-muted-foreground">Total de Tipos</p>
-            <p className="text-2xl font-bold">{scraps.length}</p>
+            <p className="text-2xl font-bold">{total}</p>
           </div>
 
           <DataTable
             data={scraps}
             columns={columns}
             searchPlaceholder="Buscar chatarras..."
+            isLoading={isLoading}
           />
         </div>
       </div>
