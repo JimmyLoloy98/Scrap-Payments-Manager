@@ -64,12 +64,12 @@ export default function ClientsPage() {
 
   const columns: Column<Client>[] = [
     {
-      key: 'name',
+      key: 'businessName',
       header: 'Negocio / Dueño',
       cell: (row) => (
         <div className="flex flex-col">
           <Link href={`/clients/${row.id}`} className="font-medium hover:underline">
-            {row.businessName || row.name}
+            {row.businessName}
           </Link>
           <span className="text-xs text-muted-foreground">{row.ownerName}</span>
         </div>
@@ -186,7 +186,7 @@ export default function ClientsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminar Negocio</AlertDialogTitle>
             <AlertDialogDescription>
-              Estas seguro de que deseas eliminar a {deleteTarget?.businessName || deleteTarget?.name}? Esta accion no se
+              Estas seguro de que deseas eliminar a {deleteTarget?.businessName}? Esta accion no se
               puede deshacer y eliminara todos los registros asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>

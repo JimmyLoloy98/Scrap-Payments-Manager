@@ -26,6 +26,7 @@ import {
 import { Loader2, Plus, Pencil, Upload } from 'lucide-react'
 import type { Client } from '@/lib/types'
 import { useOrigins } from '@/contexts/origins-context'
+import { useAuth } from '@/contexts/auth-context'
 
 interface ClientFormDialogProps {
   client?: Client
@@ -57,8 +58,9 @@ export function ClientFormDialog({
     }
   }
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
-    businessName: client?.businessName || client?.name || '',
+    businessName: client?.businessName || '',
     ownerName: client?.ownerName || '',
     dni: client?.dni || '',
     ruc: client?.ruc || '',
@@ -74,7 +76,7 @@ export function ClientFormDialog({
   React.useEffect(() => {
     if (client && open) {
       setFormData({
-        businessName: client.businessName || client.name || '',
+        businessName: client.businessName || '',
         ownerName: client.ownerName || '',
         dni: client.dni || '',
         ruc: client.ruc || '',
@@ -89,17 +91,33 @@ export function ClientFormDialog({
   }, [client, open])
 
   const isEditing = !!client
+  const { user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
     try {
-      // Map businessName to name for compatibility with existing types/codebase until fully migrated
+      // Mapeamos a snake_case para coincidir exactamente con las columnas de la BD Laravel
       const submissionData = {
-        ...formData,
-        name: formData.businessName, // Keep name synced with businessName for now
+        business_name: formData.businessName,
+        owner_name: formData.ownerName,
+        dni: formData.dni,
+        ruc: formData.ruc,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        origin: formData.origin,
+        notes: formData.notes,
+        photo_url: formData.photoUrl,
+        company_id: isEditing ? (client as any).company_id || (client as any).companyId : user?.companyId,
       }
-      await onSubmit(submissionData)
+
+      if (!submissionData.company_id) {
+         throw new Error('No se pudo identificar la empresa asociada.')
+      }
+
+      await onSubmit(submissionData as any)
       setOpen(false)
       if (!isEditing) {
         setFormData({
@@ -115,6 +133,8 @@ export function ClientFormDialog({
           photoUrl: '',
         })
       }
+    } catch (err: any) {
+      setError(err.message || 'Error al guardar. Por favor, intenta de nuevo.')
     } finally {
       setIsLoading(false)
     }
@@ -140,6 +160,11 @@ export function ClientFormDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-sm font-medium">
+              {error}
+            </div>
+          )}
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="businessName">Nombre del Negocio (Comercial) *</Label>

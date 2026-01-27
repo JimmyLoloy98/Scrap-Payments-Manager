@@ -359,10 +359,10 @@ export default function ClientDetailPage({
   return (
     <>
       <DashboardHeader
-        title={client.businessName || client.name}
+        title={client.businessName}
         breadcrumbs={[
           { label: "Negocios", href: "/clients" },
-          { label: client.businessName || client.name },
+          { label: client.businessName },
         ]}
       />
       <div className="flex-1 overflow-auto p-4 md:p-6">
@@ -388,7 +388,7 @@ export default function ClientDetailPage({
               </Avatar>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">
-                  {client.businessName || client.name}
+                  {client.businessName}
                 </h1>
                 <p className="text-muted-foreground flex items-center gap-2">
                   <User className="w-3 h-3" />{" "}

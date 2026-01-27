@@ -40,14 +40,13 @@ export interface User {
 
 // Client types
 export interface Client {
-  id: string
-  companyId: string
-  name: string
+  id: string | number
+  companyId: string | number
   ownerName: string // Nombre del dueño/gerente
+  businessName: string // Nombre del local/negocio (nombre comercial)
   dni: string // Identificador de cliente
   ruc: string // Identificador de negocio
-  businessName: string // Nombre del local/negocio (nombre comercial)
-  photoUrl?: string // Foto del local
+  photoUrl?: string | null // Foto del local
   phone: string
   email: string
   address: string
@@ -55,6 +54,14 @@ export interface Client {
   notes: string
   currentDebt: number
   createdAt: string | Date
+  updatedAt?: string | Date
+}
+
+export interface ClientsResponse {
+  clients: Client[]
+  total: number
+  page: number
+  limit: number
 }
 
 export interface ScrapType {

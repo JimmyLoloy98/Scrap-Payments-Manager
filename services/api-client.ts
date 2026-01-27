@@ -50,6 +50,9 @@ async function request<T>(
       }
     }
 
+    // Log error for debugging
+    console.error(`API Error [${response.status}] ${url}:`, errorData);
+
     throw new ApiError(response.status, finalMessage, errorData);
   }
 

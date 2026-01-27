@@ -1,14 +1,22 @@
 import { apiClient } from './api-client';
-import { Client } from '@/lib/types';
+import { Client, ClientsResponse } from '@/lib/types';
 
 export const clientsService = {
-  getAll: () => apiClient.get<Client[]>('/clients'),
+  getAll: (page = 1, limit = 10) =>
+    apiClient.get<ClientsResponse>(`/clients?page=${page}&limit=${limit}`),
 
-  getById: (id: string) => apiClient.get<Client>(`/clients/${id}`),
+  getById: (id: string | number) =>
+    apiClient.get<Client>(`/clients/${id}`),
 
-  create: (data: Partial<Client>) => apiClient.post<Client>('/clients', data),
+  getSummary: (id: string | number) =>
+    apiClient.get<any>(`/clients/${id}/summary`),
 
-  update: (id: string, data: Partial<Client>) => apiClient.put<Client>(`/clients/${id}`, data),
+  create: (data: Partial<Client>) =>
+    apiClient.post<Client>('/clients', data),
 
-  delete: (id: string) => apiClient.delete(`/clients/${id}`),
+  update: (id: string | number, data: Partial<Client>) =>
+    apiClient.put<Client>(`/clients/${id}`, data),
+
+  delete: (id: string | number) =>
+    apiClient.delete(`/clients/${id}`),
 };

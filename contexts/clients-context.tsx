@@ -23,29 +23,25 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
   const [total, setTotal] = useState(0)
 
   const refreshClients = useCallback(async () => {
+    // Only show loading if we really have no data
     if (clients.length === 0) {
       setIsLoading(true)
     }
     try {
       const response = await clientsService.getAll()
-      // ... same logic as before but with the loading optimization
-      if (Array.isArray(response)) {
+      if (response && response.clients) {
+        setClients(response.clients)
+        setTotal(response.total)
+      } else if (Array.isArray(response)) {
         setClients(response)
         setTotal(response.length)
-      } else if (response && (response as any).data) {
-        setClients((response as any).data)
-        setTotal((response as any).total || (response as any).data.length)
-      } else {
-        const data = (response as any).clients || response
-        setClients(Array.isArray(data) ? data : [])
-        setTotal((response as any).total || (Array.isArray(data) ? data.length : 0))
       }
     } catch (error) {
       console.error('Error fetching clients:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [clients.length])
+  }, []) // Removed dependency on clients.length to ensure it can be called anytime
 
   useEffect(() => {
     refreshClients()
