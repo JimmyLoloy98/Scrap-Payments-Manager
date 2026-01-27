@@ -136,12 +136,22 @@ export interface PaymentsResponse {
   limit: number
 }
 
-// Dashboard stats
+// Dashboard types
 export interface DashboardStats {
   totalActiveClients: number
   totalCreditExtended: number
   totalScrapPaymentsReceived: number
   totalPendingDebt: number
+}
+
+export interface MonthlyOverviewItem {
+  month: string
+  credits: number
+  payments: number
+}
+
+export interface MonthlyOverviewResponse {
+  data: MonthlyOverviewItem[]
 }
 
 // Activity types

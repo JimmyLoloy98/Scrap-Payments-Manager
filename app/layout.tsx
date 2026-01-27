@@ -39,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
-      <body className="font-sans antialiased" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
+      <body className="font-sans antialiased">
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           <AuthProvider>
             {children}

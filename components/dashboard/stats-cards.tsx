@@ -11,32 +11,32 @@ interface StatsCardsProps {
 export function StatsCards({ stats }: StatsCardsProps) {
   const cards = [
     {
-      title: 'Active Clients',
+      title: 'Clientes Activos',
       value: stats.totalActiveClients,
       icon: Users,
       format: 'number' as const,
-      description: 'Total registered clients',
+      description: 'Total de negocios registrados',
     },
     {
-      title: 'Credit Extended',
+      title: 'Créditos Otorgados',
       value: stats.totalCreditExtended,
       icon: CreditCard,
       format: 'currency' as const,
-      description: 'Total credit given',
+      description: 'Monto total en créditos',
     },
     {
-      title: 'Scrap Received',
+      title: 'Pagos con Chatarra',
       value: stats.totalScrapPaymentsReceived,
       icon: Recycle,
       format: 'currency' as const,
-      description: 'Total scrap value',
+      description: 'Valor total recibido en material',
     },
     {
-      title: 'Pending Debt',
+      title: 'Deuda Pendiente',
       value: stats.totalPendingDebt,
       icon: AlertCircle,
       format: 'currency' as const,
-      description: 'Outstanding balance',
+      description: 'Balance total por cobrar',
       highlight: true,
     },
   ]

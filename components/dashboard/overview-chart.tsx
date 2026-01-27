@@ -2,27 +2,30 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { type MonthlyOverviewItem } from '@/lib/types'
 
-const data = [
-  { month: 'Aug', credits: 4200, payments: 2400 },
-  { month: 'Sep', credits: 3800, payments: 2800 },
-  { month: 'Oct', credits: 5100, payments: 3200 },
-  { month: 'Nov', credits: 4600, payments: 3800 },
-  { month: 'Dec', credits: 5800, payments: 4100 },
-  { month: 'Jan', credits: 6200, payments: 5100 },
-]
+interface OverviewChartProps {
+  data: MonthlyOverviewItem[]
+}
 
-export function OverviewChart() {
+export function OverviewChart({ data }: OverviewChartProps) {
+  // Los datos siempre deben venir del API
+  const chartData: MonthlyOverviewItem[] = data
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Overview</CardTitle>
-        <CardDescription>Credits vs Scrap Payments (last 6 months)</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Resumen Mensual</CardTitle>
+            <CardDescription>Créditos vs Pagos con Chatarra (últimos 6 meses)</CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <XAxis
                 dataKey="month"
                 stroke="hsl(var(--muted-foreground))"
@@ -43,20 +46,23 @@ export function OverviewChart() {
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
                 }}
-                labelStyle={{ color: 'hsl(var(--foreground))' }}
+                itemStyle={{ fontSize: '12px' }}
+                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold', marginBottom: '4px' }}
                 formatter={(value: number) => [`S/ ${value.toLocaleString()}`, '']}
               />
               <Bar
                 dataKey="credits"
-                name="Credits"
+                name="Créditos"
                 fill="hsl(var(--chart-3))"
                 radius={[4, 4, 0, 0]}
+                barSize={30}
               />
               <Bar
                 dataKey="payments"
-                name="Payments"
+                name="Pagos"
                 fill="hsl(var(--primary))"
                 radius={[4, 4, 0, 0]}
+                barSize={30}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -64,11 +70,11 @@ export function OverviewChart() {
         <div className="flex items-center justify-center gap-6 mt-4">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-sm bg-chart-3" />
-            <span className="text-sm text-muted-foreground">Credits</span>
+            <span className="text-sm text-muted-foreground">Créditos</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-sm bg-primary" />
-            <span className="text-sm text-muted-foreground">Payments</span>
+            <span className="text-sm text-muted-foreground">Pagos</span>
           </div>
         </div>
       </CardContent>

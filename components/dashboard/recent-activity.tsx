@@ -11,7 +11,7 @@ interface RecentActivityTableProps {
 }
 
 export function RecentActivityTable({ activities }: RecentActivityTableProps) {
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return new Intl.DateTimeFormat('es-PE', {
       month: 'numeric',
       day: 'numeric',
@@ -21,16 +21,19 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Latest credits and payments</CardDescription>
+        <CardTitle>Actividad Reciente</CardTitle>
+        <CardDescription>Últimos créditos y pagos registrados</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {activities.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-center justify-between gap-4 py-2 border-b last:border-0"
-            >
+          {activities.length === 0 ? (
+            <p className="text-center py-4 text-muted-foreground italic">No hay actividad reciente</p>
+          ) : (
+            activities.map((activity, idx) => (
+              <div
+                key={`${activity.type}-${activity.id}-${idx}`}
+                className="flex items-center justify-between gap-4 py-2 border-b last:border-0"
+              >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
@@ -46,7 +49,9 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium truncate">{activity.clientName}</p>
+                  <p className="font-medium truncate">
+                    {activity.clientName || (activity as any).client_name || 'Cliente desconocido'}
+                  </p>
                   <p className="text-sm text-muted-foreground truncate">
                     {activity.description}
                   </p>
@@ -55,14 +60,15 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
               <div className="flex items-center gap-3 shrink-0">
                 <Badge variant={activity.type === 'credit' ? 'secondary' : 'default'}>
                   {activity.type === 'credit' ? '-' : '+'}
-                  {formatCurrency(activity.amount)}
+                  {formatCurrency(activity.amount || (activity as any).total_amount || 0)}
                 </Badge>
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   {formatDate(activity.date)}
                 </span>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
