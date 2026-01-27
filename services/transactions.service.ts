@@ -30,13 +30,26 @@ export const creditsService = {
 };
 
 export const paymentsService = {
-  getAll: (clientId?: string) =>
-    apiClient.get<ScrapPayment[]>(`/payments${clientId ? `?clientId=${clientId}` : ''}`),
+  getAll: (params: { clientId?: string | number, page?: number, limit?: number } = {}) => {
+    const query = new URLSearchParams()
+    if (params.clientId) query.append('clientId', String(params.clientId))
+    if (params.page) query.append('page', String(params.page))
+    if (params.limit) query.append('limit', String(params.limit))
+    return apiClient.get<import('@/lib/types').PaymentsResponse>(`/payments?${query.toString()}`)
+  },
 
-  create: (data: Partial<ScrapPayment>) => apiClient.post<ScrapPayment>('/payments', data),
+  getById: (id: string | number) =>
+    apiClient.get<ScrapPayment>(`/payments/${id}`),
 
-  update: (id: string, data: Partial<ScrapPayment>) =>
+  getByClient: (clientId: string | number) =>
+    apiClient.get<ScrapPayment[]>(`/clients/${clientId}/payments`),
+
+  create: (data: Partial<ScrapPayment>) =>
+    apiClient.post<ScrapPayment>('/payments', data),
+
+  update: (id: string | number, data: Partial<ScrapPayment>) =>
     apiClient.put<ScrapPayment>(`/payments/${id}`, data),
 
-  delete: (id: string) => apiClient.delete(`/payments/${id}`),
+  delete: (id: string | number) =>
+    apiClient.delete(`/payments/${id}`),
 };

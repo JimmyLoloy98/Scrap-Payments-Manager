@@ -69,15 +69,15 @@ export default function ClientDetailPage({
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [clientData, creditsRes, paymentsData, summaryData] = await Promise.all([
+      const [clientData, creditsRes, paymentsRes, summaryData] = await Promise.all([
         clientsService.getById(id),
         creditsService.getAll({ clientId: id }),
-        paymentsService.getAll(id),
+        paymentsService.getAll({ clientId: id }),
         clientsService.getSummary(id),
       ]);
       setClient(clientData);
       setCredits(creditsRes.credits || []);
-      setPayments(paymentsData);
+      setPayments(paymentsRes.payments || []);
       setSummary(summaryData);
     } catch (error) {
       console.error("Error loading client details:", error);

@@ -110,15 +110,15 @@ export interface CreditsResponse {
 
 // Scrap Payment types
 export interface ScrapItem {
-  scrapId: string
+  scrapId: string | number
   scrapName: string
   amount: number // Monetary value
 }
 
 export interface ScrapPayment {
-  id: string
-  companyId: string
-  clientId: string
+  id: string | number
+  companyId: string | number
+  clientId: string | number
   clientName: string
   clientOrigin: string
   date: string | Date
@@ -126,6 +126,14 @@ export interface ScrapPayment {
   totalValue: number
   notes: string
   createdAt: string | Date
+  updatedAt?: string | Date
+}
+
+export interface PaymentsResponse {
+  payments: ScrapPayment[]
+  total: number
+  page: number
+  limit: number
 }
 
 // Dashboard stats
