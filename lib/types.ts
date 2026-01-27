@@ -87,9 +87,9 @@ export interface CreditItem {
 }
 
 export interface Credit {
-  id: string
-  companyId: string
-  clientId: string
+  id: string | number
+  companyId: string | number
+  clientId: string | number
   clientName: string
   clientOrigin: string // Lugar de procedencia del cliente
   date: string | Date
@@ -98,6 +98,14 @@ export interface Credit {
   status: 'pending' | 'partial' | 'paid'
   notes: string
   createdAt: string | Date
+  updatedAt?: string | Date
+}
+
+export interface CreditsResponse {
+  credits: Credit[]
+  total: number
+  page: number
+  limit: number
 }
 
 // Scrap Payment types

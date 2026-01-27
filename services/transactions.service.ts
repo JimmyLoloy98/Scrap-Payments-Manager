@@ -2,17 +2,31 @@ import { apiClient } from './api-client';
 import { Credit, ScrapPayment } from '@/lib/types';
 
 export const creditsService = {
-  getAll: (clientId?: string) =>
-    apiClient.get<Credit[]>(`/credits${clientId ? `?clientId=${clientId}` : ''}`),
+  getAll: (params: { clientId?: string | number, page?: number, limit?: number } = {}) => {
+    const query = new URLSearchParams()
+    if (params.clientId) query.append('clientId', String(params.clientId))
+    if (params.page) query.append('page', String(params.page))
+    if (params.limit) query.append('limit', String(params.limit))
+    return apiClient.get<import('@/lib/types').CreditsResponse>(`/credits?${query.toString()}`)
+  },
 
-  create: (data: Partial<Credit>) => apiClient.post<Credit>('/credits', data),
+  getById: (id: string | number) =>
+    apiClient.get<Credit>(`/credits/${id}`),
 
-  update: (id: string, data: Partial<Credit>) => apiClient.put<Credit>(`/credits/${id}`, data),
+  getByClient: (clientId: string | number) =>
+    apiClient.get<Credit[]>(`/clients/${clientId}/credits`),
 
-  updateStatus: (id: string, status: Credit['status']) =>
+  create: (data: Partial<Credit>) =>
+    apiClient.post<Credit>('/credits', data),
+
+  update: (id: string | number, data: Partial<Credit>) =>
+    apiClient.put<Credit>(`/credits/${id}`, data),
+
+  updateStatus: (id: string | number, status: Credit['status']) =>
     apiClient.patch<Credit>(`/credits/${id}/status`, { status }),
 
-  delete: (id: string) => apiClient.delete(`/credits/${id}`),
+  delete: (id: string | number) =>
+    apiClient.delete(`/credits/${id}`),
 };
 
 export const paymentsService = {

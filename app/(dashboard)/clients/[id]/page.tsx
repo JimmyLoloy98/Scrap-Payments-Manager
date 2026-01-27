@@ -60,6 +60,7 @@ export default function ClientDetailPage({
   const [client, setClient] = useState<any>(null);
   const [credits, setCredits] = useState<Credit[]>([]);
   const [payments, setPayments] = useState<ScrapPayment[]>([]);
+  const [summary, setSummary] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
@@ -68,14 +69,16 @@ export default function ClientDetailPage({
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [clientData, creditsData, paymentsData] = await Promise.all([
+      const [clientData, creditsRes, paymentsData, summaryData] = await Promise.all([
         clientsService.getById(id),
-        creditsService.getAll(id),
+        creditsService.getAll({ clientId: id }),
         paymentsService.getAll(id),
+        clientsService.getSummary(id),
       ]);
       setClient(clientData);
-      setCredits(creditsData);
+      setCredits(creditsRes.credits || []);
       setPayments(paymentsData);
+      setSummary(summaryData);
     } catch (error) {
       console.error("Error loading client details:", error);
     } finally {
@@ -97,17 +100,17 @@ export default function ClientDetailPage({
     await loadData();
   };
 
-  const handleEditPayment = async (editId: string, data: Partial<ScrapPayment>) => {
-    await paymentsService.update(editId, data);
+  const handleEditPayment = async (editId: string | number, data: Partial<ScrapPayment>) => {
+    await paymentsService.update(String(editId), data);
     await loadData();
   };
 
-  const handleEditCredit = async (editId: string, data: Partial<Credit>) => {
+  const handleEditCredit = async (editId: string | number, data: Partial<Credit>) => {
     await creditsService.update(editId, data);
     await loadData();
   };
 
-  const handleUpdateStatus = async (editId: string, status: Credit["status"]) => {
+  const handleUpdateStatus = async (editId: string | number, status: Credit["status"]) => {
     await creditsService.updateStatus(editId, status);
     await loadData();
   };
@@ -318,14 +321,19 @@ export default function ClientDetailPage({
   ];
 
   const financialSummary = useMemo(() => {
+    if (summary) return summary;
+
     const totalCredit = credits.reduce((sum, c) => sum + c.amount, 0);
     const totalPaid = payments.reduce((sum, p) => sum + p.totalValue, 0);
     return {
       totalCredit,
-      totalPaid,
-      pendingDebt: totalCredit - totalPaid,
+      total_credit: totalCredit,
+      total_paid: totalPaid,
+      pending_debt: totalCredit - totalPaid,
+      total_items_credit: credits.length,
+      total_items_payment: payments.length
     };
-  }, [credits, payments]);
+  }, [credits, payments, summary]);
 
   if (isLoading && !client) {
     return (
@@ -562,10 +570,10 @@ export default function ClientDetailPage({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {formatCurrency(financialSummary.totalCredit)}
+                      {formatCurrency(financialSummary.total_credit || financialSummary.totalCredit)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      De {credits.length} credito(s)
+                      De {financialSummary.total_items_credit || credits.length} credito(s)
                     </p>
                   </CardContent>
                 </Card>
@@ -579,17 +587,17 @@ export default function ClientDetailPage({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-primary">
-                      {formatCurrency(financialSummary.totalPaid)}
+                      {formatCurrency(financialSummary.total_paid || financialSummary.totalPaid)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      De {payments.length} pago(s)
+                      De {financialSummary.total_items_payment || payments.length} pago(s)
                     </p>
                   </CardContent>
                 </Card>
 
                 <Card
                   className={
-                    financialSummary.pendingDebt > 0
+                    (financialSummary.pending_debt || financialSummary.pendingDebt) > 0
                       ? "border-destructive/50"
                       : ""
                   }
@@ -599,17 +607,17 @@ export default function ClientDetailPage({
                       Deuda Pendiente
                     </CardTitle>
                     <AlertCircle
-                      className={`h-4 w-4 ${financialSummary.pendingDebt > 0 ? "text-destructive" : "text-primary"}`}
+                      className={`h-4 w-4 ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
                     />
                   </CardHeader>
                   <CardContent>
                     <div
-                      className={`text-2xl font-bold ${financialSummary.pendingDebt > 0 ? "text-destructive" : "text-primary"}`}
+                      className={`text-2xl font-bold ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
                     >
-                      {formatCurrency(financialSummary.pendingDebt)}
+                      {formatCurrency(financialSummary.pending_debt || financialSummary.pendingDebt)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {financialSummary.pendingDebt > 0
+                      {(financialSummary.pending_debt || financialSummary.pendingDebt) > 0
                         ? "Saldo pendiente"
                         : "Al dia!"}
                     </p>
