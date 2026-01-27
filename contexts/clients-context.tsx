@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from 'react'
 import type { Client } from '@/lib/types'
 import { clientsService } from '@/services/clients.service'
+import { handleApiError, showSuccess } from '@/lib/error-handler'
 
 interface ClientsContextType {
   clients: Client[]
@@ -37,7 +38,7 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
         setTotal(response.length)
       }
     } catch (error) {
-      console.error('Error fetching clients:', error)
+      handleApiError(error)
     } finally {
       setIsLoading(false)
     }
@@ -50,9 +51,10 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
   const addClient = useCallback(async (data: Partial<Client>) => {
     try {
       await clientsService.create(data)
+      showSuccess('Negocio registrado correctamente')
       await refreshClients()
     } catch (error) {
-      console.error('Error adding client:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshClients])
@@ -60,9 +62,10 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
   const updateClient = useCallback(async (id: string | number, data: Partial<Client>) => {
     try {
       await clientsService.update(String(id), data)
+      showSuccess('Negocio actualizado correctamente')
       await refreshClients()
     } catch (error) {
-      console.error('Error updating client:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshClients])
@@ -70,9 +73,10 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
   const deleteClient = useCallback(async (id: string | number) => {
     try {
       await clientsService.delete(String(id))
+      showSuccess('Negocio eliminado correctamente')
       await refreshClients()
     } catch (error) {
-      console.error('Error deleting client:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshClients])

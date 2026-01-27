@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from 'react'
 import type { ScrapType } from '@/lib/types'
 import { scrapsService } from '@/services/scraps.service'
+import { handleApiError, showSuccess } from '@/lib/error-handler'
 
 interface ScrapsContextType {
   scraps: ScrapType[]
@@ -29,7 +30,7 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
       setScraps(response.scraps)
       setTotal(response.total)
     } catch (error) {
-      console.error('Error fetching scraps:', error)
+      handleApiError(error)
     } finally {
       setIsLoading(false)
     }
@@ -42,9 +43,10 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
   const addScrap = useCallback(async (data: Partial<ScrapType>) => {
     try {
       await scrapsService.create(data)
+      showSuccess('Tipo de chatarra agregado correctamente')
       await refreshScraps()
     } catch (error) {
-      console.error('Error adding scrap:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshScraps])
@@ -52,9 +54,10 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
   const updateScrap = useCallback(async (id: string | number, data: Partial<ScrapType>) => {
     try {
       await scrapsService.update(id, data)
+      showSuccess('Tipo de chatarra actualizado correctamente')
       await refreshScraps()
     } catch (error) {
-      console.error('Error updating scrap:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshScraps])
@@ -62,9 +65,10 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
   const deleteScrap = useCallback(async (id: string | number) => {
     try {
       await scrapsService.delete(id)
+      showSuccess('Tipo de chatarra eliminado correctamente')
       await refreshScraps()
     } catch (error) {
-      console.error('Error deleting scrap:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshScraps])

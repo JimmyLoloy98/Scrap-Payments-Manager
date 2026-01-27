@@ -6,6 +6,7 @@ import { mockUser } from '@/lib/mock-data'
 
 import { authService } from '@/services'
 import { useEffect } from 'react'
+import { handleApiError, showSuccess } from '@/lib/error-handler'
 
 interface AuthContextType {
   user: User | null
@@ -50,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response && response.token) {
         localStorage.setItem('auth_token', response.token)
         setUser(response.user)
+        showSuccess(`Bienvenido de nuevo, ${response.user.name}`)
         setIsLoading(false)
         return true
       }

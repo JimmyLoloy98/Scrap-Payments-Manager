@@ -58,7 +58,6 @@ export function ClientFormDialog({
     }
   }
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     businessName: client?.businessName || '',
     ownerName: client?.ownerName || '',
@@ -96,7 +95,6 @@ export function ClientFormDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError(null)
     try {
       // Mapeamos a snake_case para coincidir exactamente con las columnas de la BD Laravel
       const submissionData = {
@@ -133,8 +131,8 @@ export function ClientFormDialog({
           photoUrl: '',
         })
       }
-    } catch (err: any) {
-      setError(err.message || 'Error al guardar. Por favor, intenta de nuevo.')
+    } catch (err) {
+      // El error ya es manejado por el contexto (toast)
     } finally {
       setIsLoading(false)
     }
@@ -160,11 +158,6 @@ export function ClientFormDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          {error && (
-            <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-sm font-medium">
-              {error}
-            </div>
-          )}
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="businessName">Nombre del Negocio (Comercial) *</Label>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from 'react'
 import type { Origin } from '@/lib/types'
 import { originsService } from '@/services/origins.service'
+import { handleApiError, showSuccess } from '@/lib/error-handler'
 
 interface OriginsContextType {
   origins: Origin[]
@@ -30,7 +31,7 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
       setOrigins(response.origins)
       setTotal(response.total)
     } catch (error) {
-      console.error('Error fetching origins:', error)
+      handleApiError(error)
     } finally {
       setIsLoading(false)
     }
@@ -43,9 +44,10 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
   const addOrigin = useCallback(async (data: Partial<Origin>) => {
     try {
       await originsService.create(data)
+      showSuccess('Zona agregada correctamente')
       await refreshOrigins()
     } catch (error) {
-      console.error('Error adding origin:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshOrigins])
@@ -53,9 +55,10 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
   const updateOrigin = useCallback(async (id: string | number, data: Partial<Origin>) => {
     try {
       await originsService.update(id, data)
+      showSuccess('Zona actualizada correctamente')
       await refreshOrigins()
     } catch (error) {
-      console.error('Error updating origin:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshOrigins])
@@ -63,9 +66,10 @@ export function OriginsProvider({ children }: { children: ReactNode }) {
   const deleteOrigin = useCallback(async (id: string | number) => {
     try {
       await originsService.delete(id)
+      showSuccess('Zona eliminada correctamente')
       await refreshOrigins()
     } catch (error) {
-      console.error('Error deleting origin:', error)
+      handleApiError(error)
       throw error
     }
   }, [refreshOrigins])
