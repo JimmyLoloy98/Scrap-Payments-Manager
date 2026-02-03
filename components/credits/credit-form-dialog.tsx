@@ -31,6 +31,7 @@ interface CreditFormDialogProps {
   credit?: Credit;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  className?: string;
 }
 
 export function CreditFormDialog({
@@ -39,6 +40,7 @@ export function CreditFormDialog({
   credit,
   open: controlledOpen,
   onOpenChange,
+  className,
 }: CreditFormDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
@@ -141,7 +143,7 @@ export function CreditFormDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button>
+          <Button className={className}>
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Credito
           </Button>

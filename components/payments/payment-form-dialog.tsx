@@ -39,6 +39,7 @@ interface PaymentFormDialogProps {
   payment?: ScrapPayment;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  className?: string;
 }
 
 export function PaymentFormDialog({
@@ -47,6 +48,7 @@ export function PaymentFormDialog({
   trigger,
   open: controlledOpen,
   onOpenChange,
+  className,
 }: PaymentFormDialogProps) {
   const { scraps } = useScraps();
   const [internalOpen, setInternalOpen] = useState(false);
@@ -167,7 +169,7 @@ export function PaymentFormDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button>
+          <Button className={className}>
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Pago
           </Button>

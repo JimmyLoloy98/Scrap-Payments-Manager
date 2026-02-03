@@ -389,10 +389,18 @@ export default function ClientDetailPage({
                     {client.ownerName || "Sin nombre de responsable"}
                   </p>
 
-                  <p className="text-muted-foreground flex items-center gap-1">
-                    <Phone className="w-3 h-3" />{" "}
-                    {client.phone || "Sin número de teléfono"}
-                  </p>
+                  {client.phone ? (
+                    <a
+                      href={`tel:${client.phone}`}
+                      className="text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors underline font-semibold"
+                    >
+                      <Phone className="w-3 h-3" /> {client.phone}
+                    </a>
+                  ) : (
+                    <p className="text-muted-foreground flex items-center gap-1">
+                      <Phone className="w-3 h-3" /> Sin número de teléfono
+                    </p>
+                  )}
 
                   <p className="text-muted-foreground flex items-center gap-1">
                     <MapPin className="w-3 h-3" />{" "}
@@ -419,22 +427,21 @@ export default function ClientDetailPage({
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="gap-0">
                     <CardTitle className="text-lg">
                       Acceso rapido
                     </CardTitle>
-                    <p className="text-xs text-gray-500">
-                      Para ver mas detalles, ingrese a la pestañas ubicadas en la parte superior
-                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex justify-evenly">
                       <CreditFormDialog
                         onSubmit={handleAddCredit}
+                        className="py-6"
                       />
 
                       <PaymentFormDialog
                         onSubmit={handleAddPayment}
+                        className="py-6 bg-indigo-500"
                       />
                     </div>
                     {client.notes && (
@@ -448,7 +455,7 @@ export default function ClientDetailPage({
                   </CardContent>
                 </Card>
 
-                <Card
+                {/* <Card
                   className={
                     client.currentDebt > 0 ? "border-destructive/50" : ""
                   }
@@ -475,7 +482,7 @@ export default function ClientDetailPage({
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
 
               <Card>
@@ -577,6 +584,7 @@ export default function ClientDetailPage({
 
                   <PaymentFormDialog
                     onSubmit={handleAddPayment}
+                    className="bg-indigo-500"
                   />
                 </CardHeader>
                 <CardContent>

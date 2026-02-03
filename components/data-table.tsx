@@ -46,8 +46,8 @@ export function DataTable<T>({
   isLoading = false,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
-  const [sortKey, setSortKey] = useState<string | null>(null)
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [sortKey, setSortKey] = useState<string | null>('date')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(initialPageSize)
 
