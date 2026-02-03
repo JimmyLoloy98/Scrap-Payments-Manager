@@ -107,7 +107,7 @@ export default function ClientDetailPage({
     await loadData();
   };
 
-  const handleUpdateStatus = async (editId: string | number, status: Credit["status"]) => {
+  /* const handleUpdateStatus = async (editId: string | number, status: Credit["status"]) => {
     await creditsService.updateStatus(editId, status);
     await loadData();
   };
@@ -121,7 +121,7 @@ export default function ClientDetailPage({
       default:
         return <AlertCircle className="w-3 h-3" />;
     }
-  };
+  }; */
 
   const columnsCredits: Column<Credit>[] = [
     {
@@ -172,29 +172,7 @@ export default function ClientDetailPage({
         <span className="font-bold">{formatCurrency(row.amount)}</span>
       ),
     },
-    {
-      key: "status",
-      header: "Estado",
-      cell: (row) => (
-        <Badge
-          variant={
-            row.status === "paid"
-              ? "default"
-              : row.status === "partial"
-                ? "secondary"
-                : "destructive"
-          }
-          className="gap-1"
-        >
-          {getStatusIcon(row.status)}
-          {row.status === "paid"
-            ? "Pagado"
-            : row.status === "partial"
-              ? "Parcial"
-              : "Pendiente"}
-        </Badge>
-      ),
-    },
+
     {
       key: "actions",
       header: "Actions",
@@ -213,30 +191,7 @@ export default function ClientDetailPage({
               <Pencil className="w-4 h-4 mr-2" />
               Editar
             </DropdownMenuItem>
-            {row.status !== "paid" && (
-              <>
-                <DropdownMenuItem
-                  onClick={() => handleUpdateStatus(row.id, "partial")}
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  Mark Partial
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => handleUpdateStatus(row.id, "paid")}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Mark Paid
-                </DropdownMenuItem>
-              </>
-            )}
-            {row.status === "paid" && (
-              <DropdownMenuItem
-                onClick={() => handleUpdateStatus(row.id, "pending")}
-              >
-                <AlertCircle className="w-4 h-4 mr-2" />
-                Mark Pending
-              </DropdownMenuItem>
-            )}
+
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -437,11 +392,13 @@ export default function ClientDetailPage({
                       <CreditFormDialog
                         onSubmit={handleAddCredit}
                         className="py-6"
+                        pendingDebt={financialSummary.pending_debt || financialSummary.pendingDebt}
                       />
 
                       <PaymentFormDialog
                         onSubmit={handleAddPayment}
                         className="py-6 bg-indigo-500"
+                        pendingDebt={financialSummary.pending_debt || financialSummary.pendingDebt}
                       />
                     </div>
                     {client.notes && (
@@ -559,6 +516,7 @@ export default function ClientDetailPage({
 
                   <CreditFormDialog
                     onSubmit={handleAddCredit}
+                    pendingDebt={financialSummary.pending_debt || financialSummary.pendingDebt}
                   />
                 </CardHeader>
                 <CardContent>
@@ -585,6 +543,7 @@ export default function ClientDetailPage({
                   <PaymentFormDialog
                     onSubmit={handleAddPayment}
                     className="bg-indigo-500"
+                    pendingDebt={financialSummary.pending_debt || financialSummary.pendingDebt}
                   />
                 </CardHeader>
                 <CardContent>
