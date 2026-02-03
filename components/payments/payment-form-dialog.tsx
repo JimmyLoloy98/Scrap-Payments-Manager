@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Plus, Trash2, CalendarIcon, Pencil } from "lucide-react";
-import type { Client, ScrapPayment, ScrapItem } from "@/lib/types";
+import type { ScrapPayment, ScrapItem } from "@/lib/types";
 import { useScraps } from "@/contexts/scraps-context";
 import {
   Popover,
@@ -34,7 +34,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface PaymentFormDialogProps {
-  clients: Client[];
   onSubmit: (data: Partial<ScrapPayment>) => Promise<void>;
   trigger?: React.ReactNode;
   payment?: ScrapPayment;
@@ -43,7 +42,6 @@ interface PaymentFormDialogProps {
 }
 
 export function PaymentFormDialog({
-  clients,
   onSubmit,
   payment,
   trigger,
@@ -68,7 +66,6 @@ export function PaymentFormDialog({
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    clientId: "",
     date: new Date(),
     notes: "",
   });
@@ -83,7 +80,6 @@ export function PaymentFormDialog({
     if (open) {
       if (payment) {
         setFormData({
-          clientId: payment.clientId,
           date: payment.date ? new Date(payment.date) : new Date(),
           notes: payment.notes || "",
         });
@@ -94,7 +90,6 @@ export function PaymentFormDialog({
         );
       } else {
         setFormData({
-            clientId: "",
             date: new Date(),
             notes: "",
         });
@@ -144,18 +139,13 @@ export function PaymentFormDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.clientId) return;
     setIsLoading(true);
     try {
-      const selectedClient = clients.find((c) => c.id === formData.clientId);
-
       const validItems = items.filter(
         (i) => i.scrapId && i.amount && i.amount > 0,
       ) as ScrapItem[];
 
       await onSubmit({
-        clientId: formData.clientId,
-        clientName: selectedClient?.businessName || selectedClient?.name || "",
         date: formData.date,
         items: validItems,
         totalValue: calculateTotal(),
@@ -164,7 +154,6 @@ export function PaymentFormDialog({
 
       setOpen(false);
       setFormData({
-        clientId: "",
         date: new Date(),
         notes: "",
       });
@@ -193,59 +182,37 @@ export function PaymentFormDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="flex justify-between gap-4">
-              <div className="grid gap-2 flex-1">
-                <Label htmlFor="client">Cliente *</Label>
-                <Select
-                  value={formData.clientId}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, clientId: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.businessName || client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2 flex-1">
-                <Label>Fecha</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
+            <div className="grid gap-2">
+              <Label>Fecha</Label>
+              <Popover>
+                <PopoverTrigger asChild>
 
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.date && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.date ? (
-                        format(formData.date, "dd/MM/yyyy")
-                      ) : (
-                        <span>Seleccionar fecha</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.date}
-                      onSelect={(d: Date | undefined) =>
-                        d && setFormData({ ...formData, date: d })
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.date && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.date ? (
+                      format(formData.date, "dd/MM/yyyy")
+                    ) : (
+                      <span>Seleccionar fecha</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.date}
+                    onSelect={(d: Date | undefined) =>
+                      d && setFormData({ ...formData, date: d })
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-4 border rounded-md p-4 bg-muted/20">
@@ -273,7 +240,7 @@ export function PaymentFormDialog({
                       </Label>
                     )}
                     <Select
-                      value={item.scrapId}
+                      value={String(item.scrapId || "")}
                       onValueChange={(value) =>
                         handleItemChange(index, "scrapId", value)
                       }

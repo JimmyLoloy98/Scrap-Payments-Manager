@@ -14,27 +14,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Loader2, Plus, Trash2, Pencil } from "lucide-react";
-import type { Client, Credit, CreditItem } from "@/lib/types";
+import type { Credit, CreditItem } from "@/lib/types";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface CreditFormDialogProps {
-  clients: Client[];
   onSubmit: (data: Partial<Credit>) => Promise<void>;
   trigger?: React.ReactNode;
   credit?: Credit;
@@ -43,7 +34,6 @@ interface CreditFormDialogProps {
 }
 
 export function CreditFormDialog({
-  clients,
   onSubmit,
   trigger,
   credit,
@@ -77,7 +67,6 @@ export function CreditFormDialog({
   React.useEffect(() => {
     if (open) {
       if (credit) {
-        setClientId(credit.clientId);
         setDate(credit.date ? new Date(credit.date) : new Date());
         setItems(
           credit.items && credit.items.length > 0
@@ -127,15 +116,9 @@ export function CreditFormDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientId) return;
     setIsLoading(true);
     try {
-      const selectedClient = clients.find((c) => c.id === clientId);
-
       const creditData: Partial<Credit> = {
-        clientId,
-        clientName:
-          selectedClient?.businessName || selectedClient?.name || "Unknown",
         date,
         items: items.filter((item) => item.description.trim() !== ""),
         amount: calculateTotal(),
@@ -173,52 +156,34 @@ export function CreditFormDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="flex justify-between">
-              <div className="grid gap-2">
-                <Label htmlFor="client">Cliente *</Label>
-                <Select value={clientId} onValueChange={setClientId}>
-                  <SelectTrigger id="client">
-                    <SelectValue placeholder="Seleccionar cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.businessName || client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Fecha</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !date && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? (
-                        format(date, "dd/MM/yyyy")
-                      ) : (
-                        <span>Seleccionar fecha</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(d: Date | undefined) => d && setDate(d)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+            <div className="grid gap-2">
+              <Label>Fecha</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? (
+                      format(date, "dd/MM/yyyy")
+                    ) : (
+                      <span>Seleccionar fecha</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d: Date | undefined) => d && setDate(d)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-4 border rounded-md p-4 bg-muted/20">
@@ -327,7 +292,6 @@ export function CreditFormDialog({
               type="submit"
               disabled={
                 isLoading ||
-                !clientId ||
                 items.some((i) => !i.description || !i.price)
               }
             >

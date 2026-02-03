@@ -65,7 +65,7 @@ export interface ClientsResponse {
 }
 
 export interface ScrapType {
-  id: string | number
+  id: string
   companyId: string | number
   name: string
   description: string

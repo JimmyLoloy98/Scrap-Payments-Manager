@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,16 +30,12 @@ import {
   Recycle,
   AlertCircle,
   Pencil,
-  Store,
   User,
   FileDigit,
   MoreHorizontal,
-  Eye,
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { mockClients, mockCredits, mockScrapPayments } from "@/lib/mock-data";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
 import { Credit, ScrapPayment } from "@/lib/types";
@@ -382,32 +379,32 @@ export default function ClientDetailPage({
               </Link>
             </Button>
             <div className="flex items-center gap-4">
-              <Avatar className="w-16 h-16 rounded-lg border">
-                {client.photoUrl ? (
-                  <AvatarImage
-                    src={client.photoUrl}
-                    alt={client.businessName}
-                  />
-                ) : (
-                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
-                    <Store className="w-8 h-8" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">
                   {client.businessName}
                 </h1>
-                <p className="text-muted-foreground flex items-center gap-2">
-                  <User className="w-3 h-3" />{" "}
-                  {client.ownerName || "Sin nombre de responsable"}
-                </p>
+                <div className="flex items-center gap-4 text-sm md:text-base">
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <User className="w-3 h-3" />{" "}
+                    {client.ownerName || "Sin nombre de responsable"}
+                  </p>
+
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <Phone className="w-3 h-3" />{" "}
+                    {client.phone || "Sin número de teléfono"}
+                  </p>
+
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{" "}
+                    {client.address || "Sin dirección"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4 max-w-[600px]">
+            <TabsList className="grid w-full grid-cols-3 max-w-[600px]">
               <TabsTrigger value="overview" className="text-xs md:text-sm">
                 Info del negocio
               </TabsTrigger>
@@ -417,9 +414,6 @@ export default function ClientDetailPage({
               <TabsTrigger value="payments" className="text-xs md:text-sm">
                 Pagos con chatarra
               </TabsTrigger>
-              <TabsTrigger value="summary" className="text-xs md:text-sm">
-                Resumen
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
@@ -427,45 +421,21 @@ export default function ClientDetailPage({
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">
-                      Informacion de Contacto y Legal
+                      Acceso rapido
                     </CardTitle>
+                    <p className="text-xs text-gray-500">
+                      Para ver mas detalles, ingrese a la pestañas ubicadas en la parte superior
+                    </p>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                          <FileDigit className="w-3 h-3" /> RUC
-                        </p>
-                        <p className="text-sm font-medium">
-                          {client.ruc || "No registrado"}
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                          <FileDigit className="w-3 h-3" /> DNI
-                        </p>
-                        <p className="text-sm font-medium">
-                          {client.dni || "No registrado"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-1 border-t pt-3">
-                      <div className="flex items-center gap-3">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
-                        <span>{client.phone || "No registrado"}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <Mail className="w-4 h-4 text-muted-foreground" />
-                        <span>{client.email || "No registrado"}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span>{client.address || "No registrado"}</span>
-                      </div>
+                    <div className="flex justify-evenly">
+                      <CreditFormDialog
+                        onSubmit={handleAddCredit}
+                      />
+
+                      <PaymentFormDialog
+                        onSubmit={handleAddPayment}
+                      />
                     </div>
                     {client.notes && (
                       <div className="flex items-start gap-3 pt-2 border-t">
@@ -483,28 +453,91 @@ export default function ClientDetailPage({
                     client.currentDebt > 0 ? "border-destructive/50" : ""
                   }
                 >
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <AlertCircle
-                        className={`w-4 h-4 ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
-                      />
-                      Deuda Actual
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p
-                      className={`text-3xl font-bold ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
-                    >
-                      {formatCurrency(client.currentDebt)}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {client.currentDebt > 0
-                        ? "Saldo pendiente de cobro"
-                        : "Sin deuda pendiente"}
-                    </p>
+                  <CardContent className="flex flex-col items-stretch justify-between gap-4">
+                    <div className="flex justify-between">
+                      <div className="text-lg flex items-center gap-2">
+                        <AlertCircle
+                          className={`w-4 h-4 ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
+                        />
+                        Deuda Actual
+                      </div>
+                      <div>
+                        <p
+                          className={`text-3xl font-bold ${client.currentDebt > 0 ? "text-destructive" : "text-primary"}`}
+                        >
+                          {formatCurrency(client.currentDebt)}
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {client.currentDebt > 0
+                            ? "Saldo pendiente de cobro"
+                            : "Sin deuda pendiente"}
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
+
+              <Card>
+                <CardContent className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                  <div className="flex justify-between gap-4">
+                    <div className="text-lg flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Credito Total</span>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold">
+                        {formatCurrency(financialSummary.total_credit || financialSummary.totalCredit)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        De {financialSummary.total_items_credit || credits.length} credito(s)
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator orientation="vertical" className="hidden md:block" />
+                  <Separator orientation="horizontal" className="block md:hidden" />
+
+                  <div className="flex justify-between gap-4">
+                    <div className="text-lg flex items-center gap-2">
+                      <Recycle className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Total Pagado</span>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-primary">
+                        {formatCurrency(financialSummary.total_paid || financialSummary.totalPaid)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        De {financialSummary.total_items_payment || payments.length} pago(s)
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator orientation="vertical" className="hidden md:block" />
+                  <Separator orientation="horizontal" className="block md:hidden" />
+
+                  <div className="flex justify-between gap-4">
+                    <div className="text-lg flex items-center gap-2">
+                      <AlertCircle
+                        className={`h-4 w-4 ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
+                      />
+                      <span className="text-sm font-medium">Deuda Pendiente</span>
+                    </div>
+                    <div>
+                      <div
+                        className={`text-2xl font-bold ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
+                      >
+                        {formatCurrency(financialSummary.pending_debt || financialSummary.pendingDebt)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {(financialSummary.pending_debt || financialSummary.pendingDebt) > 0
+                          ? "Saldo pendiente"
+                          : "Al dia!"}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="credits" className="space-y-4">
@@ -518,7 +551,6 @@ export default function ClientDetailPage({
                   </div>
 
                   <CreditFormDialog
-                    clients={clients}
                     onSubmit={handleAddCredit}
                   />
                 </CardHeader>
@@ -544,7 +576,6 @@ export default function ClientDetailPage({
                   </div>
 
                   <PaymentFormDialog
-                    clients={clients}
                     onSubmit={handleAddPayment}
                   />
                 </CardHeader>
@@ -558,79 +589,11 @@ export default function ClientDetailPage({
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="summary" className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Credito Total
-                    </CardTitle>
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(financialSummary.total_credit || financialSummary.totalCredit)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      De {financialSummary.total_items_credit || credits.length} credito(s)
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total Pagado
-                    </CardTitle>
-                    <Recycle className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-primary">
-                      {formatCurrency(financialSummary.total_paid || financialSummary.totalPaid)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      De {financialSummary.total_items_payment || payments.length} pago(s)
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card
-                  className={
-                    (financialSummary.pending_debt || financialSummary.pendingDebt) > 0
-                      ? "border-destructive/50"
-                      : ""
-                  }
-                >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Deuda Pendiente
-                    </CardTitle>
-                    <AlertCircle
-                      className={`h-4 w-4 ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
-                    />
-                  </CardHeader>
-                  <CardContent>
-                    <div
-                      className={`text-2xl font-bold ${(financialSummary.pending_debt || financialSummary.pendingDebt) > 0 ? "text-destructive" : "text-primary"}`}
-                    >
-                      {formatCurrency(financialSummary.pending_debt || financialSummary.pendingDebt)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {(financialSummary.pending_debt || financialSummary.pendingDebt) > 0
-                        ? "Saldo pendiente"
-                        : "Al dia!"}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
           </Tabs>
         </div>
       </div>
 
       <CreditFormDialog
-        clients={clients}
         trigger={<span className="hidden" />}
         credit={editingCredit || undefined}
         open={!!editingCredit}
@@ -644,7 +607,6 @@ export default function ClientDetailPage({
       />
 
       <PaymentFormDialog
-        clients={clients}
         trigger={<span className="hidden" />}
         payment={editingPayment || undefined}
         open={!!editingPayment}
