@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 interface PaymentFormDialogProps {
   onSubmit: (data: Partial<ScrapPayment>) => Promise<void>;
@@ -40,6 +40,7 @@ interface PaymentFormDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   className?: string;
+  pendingDebt?: number;
 }
 
 export function PaymentFormDialog({
@@ -49,6 +50,7 @@ export function PaymentFormDialog({
   open: controlledOpen,
   onOpenChange,
   className,
+  pendingDebt,
 }: PaymentFormDialogProps) {
   const { scraps } = useScraps();
   const [internalOpen, setInternalOpen] = useState(false);
@@ -179,17 +181,28 @@ export function PaymentFormDialog({
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Pago' : 'Registrar Pago con Chatarra'}</DialogTitle>
           <DialogDescription>
-            {isEditing ? 'Modifica los detalles del pago.' : 'Ingresa los detalles de la chatarra recibida del cliente.'}
+            {pendingDebt !== undefined && (
+              <p className="text-sm mt-2">
+                <span className="mr-3">Deuda Pendiente:</span>
+                <span className={cn(
+                  "text-base font-bold",
+                  pendingDebt > 0 ? "text-destructive" : "text-primary"
+                )}>
+                  {formatCurrency(pendingDebt)}
+                </span>
+              </p>
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Fecha</Label>
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
 
                   <Button
+                    type="button"
                     variant={"outline"}
                     className={cn(
                       "w-full justify-start text-left font-normal",
@@ -252,7 +265,7 @@ export function PaymentFormDialog({
                       </SelectTrigger>
                       <SelectContent>
                         {scraps.map((scrap) => (
-                          <SelectItem key={scrap.id} value={scrap.id}>
+                          <SelectItem key={scrap.id} value={String(scrap.id)}>
                             {scrap.name}
                           </SelectItem>
                         ))}
@@ -299,10 +312,7 @@ export function PaymentFormDialog({
                     Total:{" "}
                   </span>
                   <span className="text-lg font-bold ml-2 text-primary">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(calculateTotal())}
+                    {formatCurrency(calculateTotal())}
                   </span>
                 </div>
               </div>

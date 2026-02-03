@@ -23,7 +23,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Loader2, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 interface CreditFormDialogProps {
   onSubmit: (data: Partial<Credit>) => Promise<void>;
@@ -32,6 +32,7 @@ interface CreditFormDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   className?: string;
+  pendingDebt?: number;
 }
 
 export function CreditFormDialog({
@@ -41,6 +42,7 @@ export function CreditFormDialog({
   open: controlledOpen,
   onOpenChange,
   className,
+  pendingDebt,
 }: CreditFormDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
@@ -153,16 +155,27 @@ export function CreditFormDialog({
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Credito' : 'Registrar Credito'}</DialogTitle>
           <DialogDescription>
-            {isEditing ? 'Modifica los detalles del credito.' : 'Ingresa los detalles del credito.'}
+            {pendingDebt !== undefined && (
+              <p className="text-sm mt-2">
+                <span className="mr-3">Deuda Pendiente:</span>
+                <span className={cn(
+                  "text-base font-bold",
+                  pendingDebt > 0 ? "text-destructive" : "text-primary"
+                )}>
+                  {formatCurrency(pendingDebt)}
+                </span>
+              </p>
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Fecha</Label>
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
                   <Button
+                    type="button"
                     variant={"outline"}
                     className={cn(
                       "w-full justify-start text-left font-normal",
@@ -262,10 +275,7 @@ export function CreditFormDialog({
                     Total:{" "}
                   </span>
                   <span className="text-lg font-bold ml-2">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(calculateTotal())}
+                    {formatCurrency(calculateTotal())}
                   </span>
                 </div>
               </div>
