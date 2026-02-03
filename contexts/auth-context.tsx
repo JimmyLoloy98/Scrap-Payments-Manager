@@ -28,12 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('auth_token')
-      if (token) {
+      const storedUser = localStorage.getItem('auth_user')
+
+      if (token && storedUser) {
         try {
-          const userData = await authService.me()
-          setUser(userData)
+          setUser(JSON.parse(storedUser))
         } catch (err) {
           localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
         }
       }
       setIsLoading(false)
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response && response.token) {
         localStorage.setItem('auth_token', response.token)
+        localStorage.setItem('auth_user', JSON.stringify(response.user))
         setUser(response.user)
         showSuccess(`Bienvenido de nuevo, ${response.user.name}`)
         setIsLoading(false)
@@ -65,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
     setUser(null)
   }, [])
 
