@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,6 +24,9 @@ import {
   AlertCircle,
   User,
   Edit,
+  Mail,
+  Calendar,
+  Building,
 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
@@ -267,13 +271,11 @@ export default function ClientDetailPage({
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">
                   {client.businessName}
+                  <span className="ml-2 text-sm font-medium text-muted-foreground">
+                    - {client.ownerName || "Sin nombre de responsable"}
+                  </span>
                 </h1>
-                <div className="flex items-center gap-4 text-sm md:text-base">
-                  <p className="text-muted-foreground flex items-center gap-1">
-                    <User className="w-3 h-3" />{" "}
-                    {client.ownerName || "Sin nombre de responsable"}
-                  </p>
-
+                <div className="mt-1 flex items-center gap-4 text-sm md:text-base">
                   {client.phone ? (
                     <a
                       href={`tel:${client.phone}`}
@@ -429,6 +431,58 @@ export default function ClientDetailPage({
                           : "Al dia!"}
                       </p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Información Adicional</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Mail className="h-4 w-4" /> Email
+                    </p>
+                    <p className="text-sm font-medium">
+                      {client.email || "No registrado"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <FileText className="h-4 w-4" /> RUC
+                    </p>
+                    <p className="text-sm font-medium">
+                      {client.ruc || "No registrado"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                       <FileText className="h-4 w-4" /> DNI
+                    </p>
+                    <p className="text-sm font-medium">
+                      {client.dni || "No registrado"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Building className="h-4 w-4" /> Procedencia
+                    </p>
+                    <p className="text-sm font-medium">
+                      {client.origin || "No registrado"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Calendar className="h-4 w-4" /> Fecha de Registro
+                    </p>
+                    <p className="text-sm font-medium">
+                      {client.createdAt ? formatDate(client.createdAt) : "Desconocida"}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
