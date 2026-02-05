@@ -19,12 +19,12 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
   }
 
   return (
-    <Card>
+    <Card className="w-[93%] px-0">
       <CardHeader>
         <CardTitle>Actividad Reciente</CardTitle>
         <CardDescription>Últimos créditos y pagos registrados</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3">
         <div className="space-y-4">
           {activities.length === 0 ? (
             <p className="text-center py-4 text-muted-foreground italic">No hay actividad reciente</p>

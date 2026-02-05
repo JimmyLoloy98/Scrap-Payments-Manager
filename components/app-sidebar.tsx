@@ -11,6 +11,7 @@ import {
   Sun,
   Monitor,
   MapPin,
+  Check,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/contexts/auth-context'
@@ -92,7 +93,7 @@ export function AppSidebar() {
       <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
@@ -131,30 +132,30 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">
-                  Theme
+                  Tema
                 </DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => setTheme('light')}>
                   <Sun className="w-4 h-4 mr-2" />
-                  Light
-                  {theme === 'light' && <span className="ml-auto text-primary">Active</span>}
+                  Claro
+                  {theme === 'light' && <Check className='ml-auto text-primary' />}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')}>
                   <Moon className="w-4 h-4 mr-2" />
-                  Dark
-                  {theme === 'dark' && <span className="ml-auto text-primary">Active</span>}
+                  Oscuro
+                  {theme === 'dark' && <Check className='ml-auto text-primary' />}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')}>
                   <Monitor className="w-4 h-4 mr-2" />
-                  System
-                  {theme === 'system' && <span className="ml-auto text-primary">Active</span>}
+                  Sistema
+                  {theme === 'system' && <Check className='ml-auto text-primary' />}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign out
+                  Cerrar sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

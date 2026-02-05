@@ -61,7 +61,7 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            {/* <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1> */}
             <p className="text-muted-foreground">
               Vista general de tus operaciones de crédito y cobros en tiempo real.
             </p>
@@ -70,7 +70,7 @@ export default function DashboardPage() {
           {stats && <StatsCards stats={stats} />}
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <OverviewChart data={monthlyData} />
+            <OverviewChart data={monthlyData}/>
             <RecentActivityTable activities={activities.slice(0, 10)} />
           </div>
         </div>

@@ -1,16 +1,16 @@
 'use client'
 
-import React from 'react'
+// import React from 'react'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
-import {
+/* import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
+} from '@/components/ui/breadcrumb' */
 
 interface DashboardHeaderProps {
   title: string
@@ -22,7 +22,8 @@ export function DashboardHeader({ title, breadcrumbs }: DashboardHeaderProps) {
     <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="mr-2 h-4" />
-      <Breadcrumb>
+      <h1 className="text-lg font-semibold">{title}</h1>
+      {/* <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbs ? (
             breadcrumbs.map((crumb, index) => (
@@ -43,7 +44,7 @@ export function DashboardHeader({ title, breadcrumbs }: DashboardHeaderProps) {
             </BreadcrumbItem>
           )}
         </BreadcrumbList>
-      </Breadcrumb>
+      </Breadcrumb> */}
     </header>
   )
 }

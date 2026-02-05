@@ -59,7 +59,6 @@ export function CreditFormDialog({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [clientId, setClientId] = useState("");
   const [date, setDate] = useState<Date>(new Date());
   const [items, setItems] = useState<CreditItem[]>([
     { description: "", price: 0 },
@@ -79,7 +78,6 @@ export function CreditFormDialog({
         );
         setNotes(credit.notes || "");
       } else {
-        setClientId("");
         setDate(new Date());
         setItems([{ description: "", price: 0 }]);
         setNotes("");
@@ -132,7 +130,6 @@ export function CreditFormDialog({
       await onSubmit(creditData);
       setOpen(false);
       // Reset form
-      setClientId("");
       setDate(new Date());
       setItems([{ description: "", price: 0 }]);
       setNotes("");
@@ -226,7 +223,7 @@ export function CreditFormDialog({
                       </Label>
                     )}
                     <Input
-                      placeholder="Ej: Laminas de acero"
+                      placeholder="Ej: Martillo, Llave, etc."
                       value={item.description}
                       onChange={(e) =>
                         handleItemChange(index, "description", e.target.value)

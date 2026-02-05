@@ -13,7 +13,7 @@ export function OverviewChart({ data }: OverviewChartProps) {
   const chartData: MonthlyOverviewItem[] = data
 
   return (
-    <Card>
+    <Card className="w-[93%] px-0">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -22,10 +22,10 @@ export function OverviewChart({ data }: OverviewChartProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="h-[300px] w-full">
+      <CardContent className="px-2">
+        <div className="h-[300px] w-full p-0">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <XAxis
                 dataKey="month"
                 stroke="hsl(var(--muted-foreground))"
@@ -55,14 +55,14 @@ export function OverviewChart({ data }: OverviewChartProps) {
                 name="Créditos"
                 fill="hsl(var(--chart-3))"
                 radius={[4, 4, 0, 0]}
-                barSize={30}
+                barSize={20}
               />
               <Bar
                 dataKey="payments"
                 name="Pagos"
                 fill="hsl(var(--primary))"
                 radius={[4, 4, 0, 0]}
-                barSize={30}
+                barSize={20}
               />
             </BarChart>
           </ResponsiveContainer>

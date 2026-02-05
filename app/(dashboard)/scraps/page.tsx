@@ -117,9 +117,9 @@ export default function ScrapsPage() {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Chatarras</h1>
+              {/* <h1 className="text-2xl font-bold tracking-tight">Chatarras</h1> */}
               <p className="text-muted-foreground">
-                Administra los tipos de chatarra y sus precios
+                Administra los tipos de chatarra
               </p>
             </div>
             <ScrapFormDialog onSubmit={handleAddScrap} />

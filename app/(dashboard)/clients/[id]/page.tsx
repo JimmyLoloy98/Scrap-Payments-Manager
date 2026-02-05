@@ -12,29 +12,17 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft,
   Phone,
-  Mail,
   MapPin,
   FileText,
   CreditCard,
   Recycle,
   AlertCircle,
-  Pencil,
   User,
-  FileDigit,
-  MoreHorizontal,
-  CheckCircle,
-  Clock,
+  Edit,
 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
@@ -43,9 +31,6 @@ import { PaymentFormDialog } from "@/components/payments/payment-form-dialog";
 import { CreditFormDialog } from "@/components/credits/credit-form-dialog";
 import { Loader2 } from "lucide-react";
 import { clientsService, creditsService, paymentsService } from "@/services";
-import { useClients } from "@/contexts/clients-context";
-
-
 
 export default function ClientDetailPage({
   params,
@@ -53,7 +38,6 @@ export default function ClientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { clients } = useClients();
   const [client, setClient] = useState<any>(null);
   const [credits, setCredits] = useState<Credit[]>([]);
   const [payments, setPayments] = useState<ScrapPayment[]>([]);
@@ -130,33 +114,14 @@ export default function ClientDetailPage({
       cell: (row) => formatDate(row.date),
     },
     {
-      key: "clientName",
-      header: "Cliente",
-      cell: (row) => (
-        <Link
-          href={`/clients/${row.clientId}`}
-          className="font-medium hover:underline"
-        >
-          {row.clientName}
-        </Link>
-      ),
-    },
-    /* {
-      key: 'clientOrigin',
-      header: 'Procedencia',
-      cell: (row) => (
-        <span className="text-muted-foreground">{row.clientOrigin || '-'}</span>
-      ),
-    }, */
-    {
       key: "items",
-      header: "Productos", // Changed from 'Product' to match functionality
+      header: "Detalle de Crédito",
       cell: (row) => (
         <div className="flex flex-col gap-1">
           {row.items && row.items.length > 0 ? (
             row.items.map((item, idx) => (
               <span key={idx} className="block text-sm truncate max-w-[250px]">
-                • {item.description}
+                • {item.description}{row.items.length > 1 && `: ${formatCurrency(item.price)}`}
               </span>
             ))
           ) : (
@@ -169,31 +134,19 @@ export default function ClientDetailPage({
       key: "amount",
       header: "Monto Total",
       cell: (row) => (
-        <span className="font-bold">{formatCurrency(row.amount)}</span>
+        <span className="font-medium">{formatCurrency(row.amount)}</span>
       ),
     },
 
     {
       key: "actions",
-      header: "Actions",
+      header: "Acciones",
       sortable: false,
       searchable: false,
       cell: (row) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => setEditingCredit(row)}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Editar
-            </DropdownMenuItem>
-
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button title="Editar" variant="ghost" size="sm" onClick={() => setEditingCredit(row)}>
+          <Edit className="w-4 h-4 text-green-500" />
+        </Button>
       ),
     },
   ];
@@ -205,18 +158,6 @@ export default function ClientDetailPage({
       cell: (row) => formatDate(row.date),
     },
     {
-      key: "clientName",
-      header: "Cliente",
-      cell: (row) => (
-        <Link
-          href={`/clients/${row.clientId}`}
-          className="font-medium hover:underline"
-        >
-          {row.clientName}
-        </Link>
-      ),
-    },
-    {
       key: "items",
       header: "Detalle de Chatarra",
       sortable: false,
@@ -225,7 +166,7 @@ export default function ClientDetailPage({
           {row.items && row.items.length > 0 ? (
             row.items.map((item, idx) => (
               <span key={idx} className="block text-sm">
-                • {item.scrapName}: {formatCurrency(item.amount)}
+                • {item.scrapName}{row.items.length > 1 && `: ${formatCurrency(item.amount)}`}
               </span>
             ))
           ) : (
@@ -241,9 +182,9 @@ export default function ClientDetailPage({
     },
     {
       key: "totalValue",
-      header: "Valor Total",
+      header: "Monto Total",
       cell: (row) => (
-        <span className="font-medium text-primary">
+        <span className="font-medium">
           {formatCurrency(row.totalValue)}
         </span>
       ),
@@ -254,20 +195,9 @@ export default function ClientDetailPage({
       sortable: false,
       searchable: false,
       cell: (row) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => setEditingPayment(row)}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Editar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button title="Editar" variant="ghost" size="sm" onClick={() => setEditingPayment(row)}>
+          <Edit className="w-4 h-4 text-indigo-500" />
+        </Button>
       ),
     },
   ];
@@ -369,7 +299,7 @@ export default function ClientDetailPage({
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList className="grid w-full grid-cols-3 max-w-[600px]">
               <TabsTrigger value="overview" className="text-xs md:text-sm">
-                Info del negocio
+                Resumen
               </TabsTrigger>
               <TabsTrigger value="credits" className="text-xs md:text-sm">
                 Creditos
@@ -510,7 +440,7 @@ export default function ClientDetailPage({
                   <div>
                     <CardTitle>Historial de Creditos</CardTitle>
                     <CardDescription>
-                      Todos los creditos otorgados al cliente
+                      Productos dados a credito
                     </CardDescription>
                   </div>
 
@@ -523,7 +453,7 @@ export default function ClientDetailPage({
                   <DataTable
                     data={credits}
                     columns={columnsCredits}
-                    searchPlaceholder="Search credits..."
+                    searchPlaceholder="Buscar por producto..."
                     isLoading={isLoading}
                   />
                 </CardContent>
@@ -534,7 +464,7 @@ export default function ClientDetailPage({
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Pagos con Chatarra</CardTitle>
+                    <CardTitle>Historial de Pagos</CardTitle>
                     <CardDescription>
                       Pagos recibidos en chatarra
                     </CardDescription>
@@ -550,7 +480,7 @@ export default function ClientDetailPage({
                   <DataTable
                     data={payments}
                     columns={columnsPayments}
-                    searchPlaceholder="Search payments..."
+                    searchPlaceholder="Buscar por nombre..."
                     isLoading={isLoading}
                   />
                 </CardContent>
