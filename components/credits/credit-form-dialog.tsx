@@ -153,7 +153,7 @@ export function CreditFormDialog({
           <DialogTitle>{isEditing ? 'Editar Credito' : 'Registrar Credito'}</DialogTitle>
           <DialogDescription>
             {pendingDebt !== undefined && (
-              <p className="text-sm mt-2">
+              <span className="text-sm mt-2">
                 <span className="mr-3">Deuda Pendiente:</span>
                 <span className={cn(
                   "text-base font-bold",
@@ -161,7 +161,7 @@ export function CreditFormDialog({
                 )}>
                   {formatCurrency(pendingDebt)}
                 </span>
-              </p>
+              </span>
             )}
           </DialogDescription>
         </DialogHeader>

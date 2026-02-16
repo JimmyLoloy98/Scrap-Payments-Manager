@@ -182,7 +182,7 @@ export function PaymentFormDialog({
           <DialogTitle>{isEditing ? 'Editar Pago' : 'Registrar Pago con Chatarra'}</DialogTitle>
           <DialogDescription>
             {pendingDebt !== undefined && (
-              <p className="text-sm mt-2">
+              <span className="text-sm mt-2">
                 <span className="mr-3">Deuda Pendiente:</span>
                 <span className={cn(
                   "text-base font-bold",
@@ -190,7 +190,7 @@ export function PaymentFormDialog({
                 )}>
                   {formatCurrency(pendingDebt)}
                 </span>
-              </p>
+              </span>
             )}
           </DialogDescription>
         </DialogHeader>
