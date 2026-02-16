@@ -70,7 +70,9 @@ export function OriginFormDialog({ origin, onSubmit, trigger }: OriginFormDialog
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+      >
         <DialogHeader>
           <DialogTitle>
             {isEditing ? 'Editar Lugar de Procedencia' : 'Agregar Lugar de Procedencia'}
