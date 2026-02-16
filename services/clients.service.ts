@@ -14,8 +14,24 @@ export const clientsService = {
   create: (data: Partial<Client>) =>
     apiClient.post<Client>('/clients', data),
 
-  update: (id: string | number, data: Partial<Client>) =>
-    apiClient.put<Client>(`/clients/${id}`, data),
+  update: (id: string | number, data: any) => {
+    if (data instanceof FormData) {
+      // Laravel/PHP doesn't handle multipart/form-data with PUT natively
+      // So we use POST with _method spoofing
+      data.append('_method', 'PUT');
+      return apiClient.post<Client>(`/clients/${id}`, data);
+    }
+    return apiClient.put<Client>(`/clients/${id}`, data);
+  },
+
+  uploadPhoto: (id: string | number, photo: File) => {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return apiClient.post<Client>(`/clients/${id}/upload-photo`, formData);
+  },
+
+  deletePhoto: (id: string | number) =>
+    apiClient.delete(`/clients/${id}/photo`),
 
   delete: (id: string | number) =>
     apiClient.delete(`/clients/${id}`),

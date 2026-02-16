@@ -46,7 +46,7 @@ export interface Client {
   businessName: string // Nombre del local/negocio (nombre comercial)
   dni: string // Identificador de cliente
   ruc: string // Identificador de negocio
-  photoUrl?: string | null // Foto del local
+  photo?: string | null // Foto del local
   phone: string
   email: string
   address: string

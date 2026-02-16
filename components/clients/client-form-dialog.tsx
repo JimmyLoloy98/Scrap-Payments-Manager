@@ -68,7 +68,6 @@ export function ClientFormDialog({
     address: client?.address || '',
     origin: client?.origin || '',
     notes: client?.notes || '',
-    photoUrl: client?.photoUrl || '',
   })
 
   // Reset form data when client changes or dialog opens
@@ -84,7 +83,6 @@ export function ClientFormDialog({
         address: client.address || '',
         origin: client.origin || '',
         notes: client.notes || '',
-        photoUrl: client.photoUrl || '',
       })
     }
   }, [client, open])
@@ -107,7 +105,6 @@ export function ClientFormDialog({
         address: formData.address,
         origin: formData.origin,
         notes: formData.notes,
-        photo_url: formData.photoUrl,
         company_id: isEditing ? (client as any).company_id || (client as any).companyId : user?.companyId,
       }
 
@@ -128,7 +125,6 @@ export function ClientFormDialog({
           address: '',
           origin: '',
           notes: '',
-          photoUrl: '',
         })
       }
     } catch (err) {
@@ -250,17 +246,6 @@ export function ClientFormDialog({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="photo">Foto del Local</Label>
-              <div className="flex items-center gap-4">
-                 <Button type="button" variant="outline" className="w-full" onClick={() => alert('Simulacion: Foto subida')}>
-                    <Upload className="w-4 h-4 mr-2" />
-                    Subir Foto
-                 </Button>
-                 {formData.photoUrl && <span className="text-xs text-green-600">Foto cargada</span>}
-              </div>
             </div>
 
             <div className="grid gap-2">

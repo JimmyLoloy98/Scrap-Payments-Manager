@@ -18,7 +18,16 @@ async function request<T>(
   const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
 
   const headers = new Headers(options.headers);
-  headers.set('Content-Type', 'application/json');
+
+  // Only set Content-Type to json if it's not FormData (browser sets boundary for FormData)
+  // We check if the body in options is FormData, but body is passed in options.
+  // Actually, the body handling happens in the helper methods below, but we need to know here.
+  // The 'body' is passed into 'options' by the helper methods.
+  const isFormData = options.body instanceof FormData;
+
+  if (!isFormData) {
+    headers.set('Content-Type', 'application/json');
+  }
   headers.set('Accept', 'application/json');
 
   if (token) {
@@ -68,13 +77,25 @@ export const apiClient = {
     request<T>(endpoint, { ...options, method: 'GET' }),
 
   post: <T>(endpoint: string, body: any, options?: RequestInit) =>
-    request<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
+    request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: body instanceof FormData ? body : JSON.stringify(body)
+    }),
 
   put: <T>(endpoint: string, body: any, options?: RequestInit) =>
-    request<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
+    request<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: body instanceof FormData ? body : JSON.stringify(body)
+    }),
 
   patch: <T>(endpoint: string, body: any, options?: RequestInit) =>
-    request<T>(endpoint, { ...options, method: 'PATCH', body: JSON.stringify(body) }),
+    request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body instanceof FormData ? body : JSON.stringify(body)
+    }),
 
   delete: <T>(endpoint: string, options?: RequestInit) =>
     request<T>(endpoint, { ...options, method: 'DELETE' }),

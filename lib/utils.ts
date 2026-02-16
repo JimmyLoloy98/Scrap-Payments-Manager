@@ -19,3 +19,16 @@ export function formatCurrency(value: number) {
     currency: 'PEN',
   }).format(value)
 }
+
+export function getAssetUrl(path?: string | null) {
+  if (!path) return ''
+  if (path.startsWith('http')) return path
+
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000')
+    .replace(/\/$/, '')
+    .replace(/\/api\/v\d+$/, '') // elimina /api/v1 si existe
+
+  const cleanPath = path.replace(/^\/?(storage\/)?/, '')
+
+  return `${baseUrl}/storage/${cleanPath}`
+}

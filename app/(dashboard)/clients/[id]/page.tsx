@@ -27,14 +27,23 @@ import {
   Mail,
   Calendar,
   Building,
+  Eye,
+  Trash2,
+  Upload,
 } from "lucide-react";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatDate, formatCurrency, getAssetUrl } from "@/lib/utils";
 import { DataTable, type Column } from "@/components/data-table";
 import { Credit, ScrapPayment } from "@/lib/types";
 import { PaymentFormDialog } from "@/components/payments/payment-form-dialog";
 import { CreditFormDialog } from "@/components/credits/credit-form-dialog";
 import { Loader2 } from "lucide-react";
 import { clientsService, creditsService, paymentsService } from "@/services";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ClientDetailPage({
   params,
@@ -50,6 +59,12 @@ export default function ClientDetailPage({
 
   const [editingPayment, setEditingPayment] = useState<ScrapPayment | null>(null);
   const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
+  const [showPhotoPreview, setShowPhotoPreview] = useState(false);
+
+  // New state for direct upload
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadPreviewUrl, setUploadPreviewUrl] = useState<string>("");
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -95,21 +110,55 @@ export default function ClientDetailPage({
     await loadData();
   };
 
-  /* const handleUpdateStatus = async (editId: string | number, status: Credit["status"]) => {
-    await creditsService.updateStatus(editId, status);
-    await loadData();
+  const handleDeletePhoto = async () => {
+    if (!client) return;
+    try {
+      setIsLoading(true);
+      await clientsService.deletePhoto(id);
+      await loadData();
+      setShowPhotoPreview(false);
+    } catch (error) {
+      console.error("Error deleting photo:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getStatusIcon = (status: Credit["status"]) => {
-    switch (status) {
-      case "paid":
-        return <CheckCircle className="w-3 h-3" />;
-      case "partial":
-        return <Clock className="w-3 h-3" />;
-      default:
-        return <AlertCircle className="w-3 h-3" />;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setUploadPreviewUrl(url);
+      setShowUploadModal(true);
     }
-  }; */
+  };
+
+  const handleSavePhoto = async () => {
+    if (!selectedFile) return;
+    setIsLoading(true);
+    try {
+      await clientsService.uploadPhoto(id, selectedFile);
+      await loadData();
+      handleCancelPhoto();
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelPhoto = () => {
+    setSelectedFile(null);
+    if (uploadPreviewUrl) {
+      URL.revokeObjectURL(uploadPreviewUrl);
+    }
+    setUploadPreviewUrl("");
+    setShowUploadModal(false);
+    // Reset file input
+    const input = document.getElementById('photo-input') as HTMLInputElement;
+    if (input) input.value = '';
+  };
 
   const columnsCredits: Column<Credit>[] = [
     {
@@ -315,8 +364,30 @@ export default function ClientDetailPage({
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader className="gap-0">
-                    <CardTitle className="text-lg">
-                      Acceso rapido
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span>Acceso rapido</span>
+                      {client.photo ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowPhotoPreview(true)}
+                          className="text-xs gap-1"
+                        >
+                          <Eye className="w-4 h-4" />
+                          Ver Foto
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => document.getElementById('photo-input')?.click()}
+                          className="text-xs gap-1"
+                        >
+                          <Upload className="w-4 h-4" />
+                          Subir Foto
+                        </Button>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -568,6 +639,86 @@ export default function ClientDetailPage({
           }
           return Promise.resolve();
         }}
+      />
+
+      {/* Photo Preview Modal */}
+      <Dialog open={showPhotoPreview} onOpenChange={setShowPhotoPreview}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Foto del Local - {client?.businessName}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center p-4 gap-4">
+            {client?.photo && (
+              <>
+                <img
+                  src={getAssetUrl(client.photo)}
+                  alt={`Foto de ${client.businessName}`}
+                  className="max-w-full max-h-[70vh] rounded-lg object-contain"
+                />
+                <Button
+                  variant="destructive"
+                  onClick={handleDeletePhoto}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="mr-2 h-4 w-4" />
+                  )}
+                  {isLoading ? "Eliminando..." : "Eliminar Foto"}
+                </Button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showUploadModal} onOpenChange={(open) => !open && handleCancelPhoto()}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Previsualización de Foto</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center p-4 gap-4">
+            {uploadPreviewUrl && (
+              <img
+                src={uploadPreviewUrl}
+                alt="Upload preview"
+                className="max-w-full max-h-[50vh] rounded-lg object-contain border"
+              />
+            )}
+            <div className="flex gap-4 w-full">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleCancelPhoto}
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={handleSavePhoto}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                {isLoading ? "Guardando..." : "Guardar Foto"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Hidden File Input for Direct Upload */}
+      <input
+        type="file"
+        id="photo-input"
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
       />
     </>
   );
