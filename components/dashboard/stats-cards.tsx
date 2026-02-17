@@ -54,10 +54,10 @@ export function StatsCards({ stats }: StatsCardsProps) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => (
         <Card key={card.title} className={card.highlight ? 'border-destructive/50' : ''}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {card.title}
             </CardTitle>

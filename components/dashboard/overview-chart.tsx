@@ -13,7 +13,7 @@ export function OverviewChart({ data }: OverviewChartProps) {
   const chartData: MonthlyOverviewItem[] = data
 
   return (
-    <Card className="w-[93%] px-0">
+    <Card className="w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

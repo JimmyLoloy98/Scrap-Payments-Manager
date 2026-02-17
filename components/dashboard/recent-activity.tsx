@@ -19,7 +19,7 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
   }
 
   return (
-    <Card className="w-[93%] px-0">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>Actividad Reciente</CardTitle>
         <CardDescription>Últimos créditos y pagos registrados</CardDescription>

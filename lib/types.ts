@@ -166,3 +166,18 @@ export interface RecentActivity {
   amount: number
   date: string | Date
 }
+
+export interface ScrapCollectionItem {
+  scrapId: number
+  scrapName: string
+  unitMeasure: string
+  totalQuantity: number
+}
+
+export interface ScrapCollectionResponse {
+  period: {
+    startDate: string
+    endDate: string
+  }
+  data: ScrapCollectionItem[]
+}

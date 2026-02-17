@@ -5,6 +5,7 @@ import { DashboardHeader } from '@/components/dashboard-header';
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RecentActivityTable } from '@/components/dashboard/recent-activity';
 import { OverviewChart } from '@/components/dashboard/overview-chart';
+import { ScrapCollectionCard } from '@/components/dashboard/scrap-collection-card';
 import { dashboardService } from '@/services';
 import type { DashboardStats, RecentActivity, MonthlyOverviewItem } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
@@ -69,9 +70,16 @@ export default function DashboardPage() {
 
           {stats && <StatsCards stats={stats} />}
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <OverviewChart data={monthlyData}/>
-            <RecentActivityTable activities={activities.slice(0, 10)} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <ScrapCollectionCard />
+            </div>
+            <div className="col-span-1">
+              <OverviewChart data={monthlyData} />
+            </div>
+            <div className="col-span-1">
+              <RecentActivityTable activities={activities.slice(0, 6)} />
+            </div>
           </div>
         </div>
       </div>
