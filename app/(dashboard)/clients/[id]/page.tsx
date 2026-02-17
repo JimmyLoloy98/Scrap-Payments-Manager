@@ -596,7 +596,7 @@ export default function ClientDetailPage({
               </Card>
             </TabsContent>
 
-            <TabsContent value="credits" className="space-y-4">
+            <TabsContent value="credits" forceMount className="space-y-4 data-[state=inactive]:hidden">
               <Card className="">
                 <CardHeader className="flex items-center justify-between">
                   <div>
@@ -624,7 +624,7 @@ export default function ClientDetailPage({
               </Card>
             </TabsContent>
 
-            <TabsContent value="payments" className="space-y-4">
+            <TabsContent value="payments" forceMount className="space-y-4 data-[state=inactive]:hidden">
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <div>
