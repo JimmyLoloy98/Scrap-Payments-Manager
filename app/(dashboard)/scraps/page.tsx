@@ -12,6 +12,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -27,7 +34,16 @@ import type { ScrapType } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 export default function ScrapsPage() {
-  const { scraps, addScrap, updateScrap, deleteScrap, isLoading, total } = useScraps()
+  const {
+    scraps,
+    addScrap,
+    updateScrap,
+    deleteScrap,
+    isLoading,
+    total,
+    unitFilter,
+    setUnitFilter
+  } = useScraps()
   const [deleteTarget, setDeleteTarget] = useState<ScrapType | null>(null)
 
   const handleAddScrap = async (data: Partial<ScrapType>) => {
@@ -58,6 +74,15 @@ export default function ScrapsPage() {
       ),
     },
     {
+      key: 'unitMeasure',
+      header: 'Unidad',
+      cell: (row) => (
+        <span className="capitalize px-2 py-1 rounded-md bg-muted text-xs font-medium">
+          {row.unitMeasure === 'kg' ? '(Kg)' : '(Und)'}
+        </span>
+      ),
+    },
+    /* {
       key: 'description',
       header: 'Descripcion',
       cell: (row) => (
@@ -65,7 +90,7 @@ export default function ScrapsPage() {
           {row.description || '-'}
         </span>
       ),
-    },
+    }, */
     {
       key: 'createdAt',
       header: 'Fecha de Creacion',
@@ -117,12 +142,26 @@ export default function ScrapsPage() {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              {/* <h1 className="text-2xl font-bold tracking-tight">Chatarras</h1> */}
               <p className="text-muted-foreground">
                 Administra los tipos de chatarra
               </p>
             </div>
-            <ScrapFormDialog onSubmit={handleAddScrap} />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Filtrar:</span>
+                <Select value={unitFilter} onValueChange={setUnitFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Unidad de medida" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las unidades</SelectItem>
+                    <SelectItem value="kg">Kilogramos (Kg)</SelectItem>
+                    <SelectItem value="und">Unidades (Und)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <ScrapFormDialog onSubmit={handleAddScrap} />
+            </div>
           </div>
 
           <div className="rounded-lg border bg-card p-4 max-w-xs">

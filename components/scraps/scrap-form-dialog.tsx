@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2, Plus, Pencil } from 'lucide-react'
 import type { ScrapType } from '@/lib/types'
 
@@ -28,7 +29,8 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: scrap?.name || '',
-    description: scrap?.description || ''
+    description: scrap?.description || '',
+    unitMeasure: scrap?.unitMeasure || 'kg' as 'kg' | 'und'
   })
 
   const isEditing = !!scrap
@@ -39,6 +41,7 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
       setFormData({
         name: scrap.name || '',
         description: scrap.description || '',
+        unitMeasure: scrap.unitMeasure || 'kg'
       })
     }
   }, [scrap])
@@ -51,7 +54,7 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
       await onSubmit(formData)
       setOpen(false)
       if (!isEditing) {
-        setFormData({ name: '', description: '' })
+        setFormData({ name: '', description: '', unitMeasure: 'kg' })
       }
     } finally {
       setIsLoading(false)
@@ -91,6 +94,27 @@ export function ScrapFormDialog({ scrap, onSubmit, trigger }: ScrapFormDialogPro
                 required
               />
             </div>
+
+            <div className="grid gap-2">
+              <Label>Unidad de Medida</Label>
+              <RadioGroup
+                value={formData.unitMeasure}
+                onValueChange={(value: 'kg' | 'und') =>
+                  setFormData({ ...formData, unitMeasure: value })
+                }
+                className="flex gap-4 pt-1"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="kg" id="kg" />
+                  <Label htmlFor="kg" className="font-normal cursor-pointer">Kilogramos (Kg)</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="und" id="und" />
+                  <Label htmlFor="und" className="font-normal cursor-pointer">Unidades (Und)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="description">Descripcion</Label>
               <Textarea

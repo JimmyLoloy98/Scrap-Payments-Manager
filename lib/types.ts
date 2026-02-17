@@ -69,6 +69,7 @@ export interface ScrapType {
   companyId: string | number
   name: string
   description: string
+  unitMeasure: 'kg' | 'und'
   createdAt: string | Date
   updatedAt?: string | Date
 }
