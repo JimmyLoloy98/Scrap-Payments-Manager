@@ -66,7 +66,7 @@ export function OriginFormDialog({ origin, onSubmit, trigger }: OriginFormDialog
         {trigger || (
           <Button>
             {isEditing ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-            {isEditing ? 'Editar' : 'Nueva Procedencia'}
+            {isEditing ? 'Editar' : 'Nueva Zona'}
           </Button>
         )}
       </DialogTrigger>
@@ -75,12 +75,12 @@ export function OriginFormDialog({ origin, onSubmit, trigger }: OriginFormDialog
       >
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Editar Lugar de Procedencia' : 'Agregar Lugar de Procedencia'}
+            {isEditing ? 'Editar Zona' : 'Agregar Zona'}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Actualiza la informacion del lugar de procedencia.'
-              : 'Crea un nuevo lugar de procedencia para clasificar a tus clientes.'}
+              ? 'Actualiza la informacion de la zona.'
+              : 'Crea una nueva zona para clasificar a tus clientes.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

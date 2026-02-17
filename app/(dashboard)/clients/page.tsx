@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Eye, Pencil, Trash2, X } from 'lucide-react'
 import { useOrigins } from '@/contexts/origins-context'
 import { useClients } from '@/contexts/clients-context'
 import {
@@ -84,7 +84,7 @@ export default function ClientsPage() {
     },
     {
       key: 'origin',
-      header: 'Procedencia',
+      header: 'Zona',
       cell: (row) => (
         <span className="text-muted-foreground">{row.origin || '-'}</span>
       ),
@@ -140,25 +140,15 @@ export default function ClientsPage() {
       <DashboardHeader title="Negocios" />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              {/* <h1 className="text-2xl font-bold tracking-tight">Negocios</h1> */}
-              <p className="text-muted-foreground">
-                Gestiona tu base de datos de clientes y sus cuentas
-              </p>
-            </div>
-            <ClientFormDialog onSubmit={handleAddClient} />
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">Filtrar por procedencia:</span>
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Filtrar por zona:</span>
               <Select value={originFilter} onValueChange={setOriginFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Todas las zonas" />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Zonas de procedencia" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas las zonas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {origins.map((origin) => (
                     <SelectItem key={origin.id} value={origin.name}>
                       {origin.name}
@@ -167,16 +157,7 @@ export default function ClientsPage() {
                 </SelectContent>
               </Select>
             </div>
-            {originFilter !== 'all' && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setOriginFilter('all')}
-                className="text-muted-foreground"
-              >
-                Limpiar filtro
-              </Button>
-            )}
+            <ClientFormDialog onSubmit={handleAddClient} />
           </div>
 
           <DataTable

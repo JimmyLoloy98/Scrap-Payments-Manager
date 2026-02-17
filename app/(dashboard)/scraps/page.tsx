@@ -142,33 +142,21 @@ export default function ScrapsPage() {
       <DashboardHeader title="Gestion de Chatarras" />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p className="text-muted-foreground">
-                Administra los tipos de chatarra
-              </p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filtrar por unidad:</span>
+              <Select value={unitFilter} onValueChange={setUnitFilter}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Unidades de medida" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  <SelectItem value="kg">Kilogramos (Kg)</SelectItem>
+                  <SelectItem value="und">Unidades (Und)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">Filtrar:</span>
-                <Select value={unitFilter} onValueChange={setUnitFilter}>
-                  <SelectTrigger className="w-[130px]">
-                    <SelectValue placeholder="Unidad de medida" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="kg">(Kg)</SelectItem>
-                    <SelectItem value="und">(Und)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <ScrapFormDialog onSubmit={handleAddScrap} />
-            </div>
-          </div>
-
-          <div className="rounded-lg border bg-card p-4 max-w-xs">
-            <p className="text-sm text-muted-foreground">Total de Tipos</p>
-            <p className="text-2xl font-bold">{total}</p>
+            <ScrapFormDialog onSubmit={handleAddScrap} />
           </div>
 
           <DataTable

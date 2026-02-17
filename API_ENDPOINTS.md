@@ -885,10 +885,10 @@ Authorization: Bearer {token}
 
 ---
 
-## Lugares de Procedencia (Origins)
+## Zonas (Origins)
 
 ### GET /origins
-**Descripción:** Listar todos los lugares de procedencia
+**Descripción:** Listar todos las zonas
 
 **Headers:**
 ```

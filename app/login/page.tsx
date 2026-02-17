@@ -50,7 +50,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">ScrapFlow</CardTitle>
+            <CardTitle className="text-2xl font-bold">Gestión de cobros</CardTitle>
             <CardDescription className="mt-2">
               Inicia sesión para gestionar tus créditos y pagos de chatarra
             </CardDescription>

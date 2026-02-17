@@ -232,7 +232,7 @@ export function ClientFormDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="origin">Lugar de Procedencia</Label>
+              <Label htmlFor="origin">Zona de procedencia</Label>
               <Select
                 value={formData.origin}
                 onValueChange={(value) => setFormData({ ...formData, origin: value })}

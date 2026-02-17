@@ -16,7 +16,7 @@ export const mockUser: User[] = [
   },
 ]
 
-// Mock origins (lugares de procedencia)
+// Mock origins (Zonas)
 export const mockOrigins: Origin[] = [
   {
     id: '1',

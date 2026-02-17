@@ -112,28 +112,22 @@ export default function OriginsPage() {
 
   return (
     <>
-      <DashboardHeader title="Lugares de Procedencia" />
+      <DashboardHeader title="Zonas" />
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              {/* <h1 className="text-2xl font-bold tracking-tight">Lugares de Procedencia</h1> */}
               <p className="text-muted-foreground">
-                Administra los lugares de procedencia para clasificar a tus clientes
+                Administra las zonas para clasificar a tus clientes
               </p>
             </div>
             <OriginFormDialog onSubmit={handleAddOrigin} />
           </div>
 
-          <div className="rounded-lg border bg-card p-4 max-w-xs">
-            <p className="text-sm text-muted-foreground">Total de Zonas</p>
-            <p className="text-2xl font-bold">{total}</p>
-          </div>
-
           <DataTable
             data={origins}
             columns={columns}
-            searchPlaceholder="Buscar lugares..."
+            searchPlaceholder="Buscar zona..."
             isLoading={isLoading}
           />
         </div>
@@ -142,10 +136,10 @@ export default function OriginsPage() {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar Lugar de Procedencia</AlertDialogTitle>
+            <AlertDialogTitle>Eliminar Zona</AlertDialogTitle>
             <AlertDialogDescription>
               Estas seguro de que deseas eliminar &quot;{deleteTarget?.name}&quot;? Esta accion no se
-              puede deshacer. Los clientes asignados a este lugar mantendran el valor pero
+              puede deshacer. Los clientes asignados a esta zona mantendran el valor pero
               no aparecera en los filtros.
             </AlertDialogDescription>
           </AlertDialogHeader>

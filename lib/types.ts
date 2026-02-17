@@ -5,7 +5,7 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-// Origin types (Lugares de procedencia)
+// Origin types (Zonas)
 export interface Origin {
   id: string | number
   companyId: string | number
@@ -50,7 +50,7 @@ export interface Client {
   phone: string
   email: string
   address: string
-  origin: string // Lugar de procedencia
+  origin: string // Zona de procedencia
   notes: string
   currentDebt: number
   createdAt: string | Date
@@ -92,7 +92,7 @@ export interface Credit {
   companyId: string | number
   clientId: string | number
   clientName: string
-  clientOrigin: string // Lugar de procedencia del cliente
+  clientOrigin: string // Zona de procedencia del cliente
   date: string | Date
   items: CreditItem[]
   amount: number // Total amount (sum of items)
