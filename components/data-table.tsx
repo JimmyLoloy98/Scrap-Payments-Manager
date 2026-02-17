@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import {
   Table,
   TableBody,
@@ -52,12 +52,16 @@ export function DataTable<T>({
   const [internalSearch, setInternalSearch] = useState('')
   const search = searchValue !== undefined ? searchValue : internalSearch
 
+  const lastSearchRef = useRef<string | null>(null)
+
   // Debounce server-side search
   useEffect(() => {
     if (!onSearch) return
+    if (internalSearch === lastSearchRef.current) return
 
     const timer = setTimeout(() => {
       onSearch(internalSearch)
+      lastSearchRef.current = internalSearch
     }, 500)
 
     return () => clearTimeout(timer)
@@ -70,7 +74,8 @@ export function DataTable<T>({
   const searchableColumns = columns.filter((col) => col.searchable !== false)
 
   const filteredData = useMemo(() => {
-    if (!search) return data
+    // If onSearch is provided, the filtering is handled by the server
+    if (onSearch || !search) return data
 
     return data.filter((row) =>
       searchableColumns.some((col) => {
@@ -79,7 +84,7 @@ export function DataTable<T>({
         return String(value).toLowerCase().includes(search.toLowerCase())
       })
     )
-  }, [data, search, searchableColumns])
+  }, [data, search, searchableColumns, onSearch])
 
   const sortedData = useMemo(() => {
     if (!sortKey) return filteredData

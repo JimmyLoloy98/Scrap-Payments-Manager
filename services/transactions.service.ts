@@ -14,8 +14,13 @@ export const creditsService = {
   getById: (id: string | number) =>
     apiClient.get<Credit>(`/credits/${id}`),
 
-  getByClient: (clientId: string | number) =>
-    apiClient.get<Credit[]>(`/clients/${clientId}/credits`),
+  getByClient: (clientId: string | number, params: { search?: string, page?: number, limit?: number } = {}) => {
+    const query = new URLSearchParams()
+    if (params.search) query.append('search', params.search)
+    if (params.page) query.append('page', String(params.page))
+    if (params.limit) query.append('limit', String(params.limit))
+    return apiClient.get<import('@/lib/types').CreditsResponse>(`/clients/${clientId}/credits?${query.toString()}`)
+  },
 
   create: (data: Partial<Credit>) =>
     apiClient.post<Credit>('/credits', data),
@@ -43,8 +48,13 @@ export const paymentsService = {
   getById: (id: string | number) =>
     apiClient.get<ScrapPayment>(`/payments/${id}`),
 
-  getByClient: (clientId: string | number) =>
-    apiClient.get<ScrapPayment[]>(`/clients/${clientId}/payments`),
+  getByClient: (clientId: string | number, params: { search?: string, page?: number, limit?: number } = {}) => {
+    const query = new URLSearchParams()
+    if (params.search) query.append('search', params.search)
+    if (params.page) query.append('page', String(params.page))
+    if (params.limit) query.append('limit', String(params.limit))
+    return apiClient.get<import('@/lib/types').PaymentsResponse>(`/clients/${clientId}/payments?${query.toString()}`)
+  },
 
   create: (data: Partial<ScrapPayment>) =>
     apiClient.post<ScrapPayment>('/payments', data),
