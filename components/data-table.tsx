@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ChevronLeft, ChevronRight, Search, ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, ChevronsUpDown, ChevronUp, ChevronDown, X } from 'lucide-react'
 
 export interface Column<T> {
   key: string
@@ -143,16 +143,23 @@ export function DataTable<T>({
             placeholder={searchPlaceholder}
             value={search}
             onChange={(e) => {
-              const value = e.target.value
-              if (onSearch) {
-                setInternalSearch(value)
-              } else {
-                setInternalSearch(value) // Still update internal for controlled/uncontrolled hybrid if needed, but let's be consistent
-              }
+              setInternalSearch(e.target.value)
               setCurrentPage(1)
             }}
-            className="pl-9"
+            className="pl-9 pr-9"
           />
+          {search && (
+            <button
+              onClick={() => {
+                setInternalSearch('')
+                setCurrentPage(1)
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground transition-colors"
+              title="Limpiar búsqueda"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
