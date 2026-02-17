@@ -55,44 +55,11 @@ export const mockOrigins: Origin[] = [
   },
 ]
 
-// Mock scrap types (tipos de chatarra)
-export const mockScrapTypes: ScrapType[] = [
-  {
-    id: '1',
-    companyId: 'company-1',
-    name: 'Hierro',
-    description: 'Chatarra de hierro general',
-    createdAt: new Date('2024-01-01'),
-  },
-  {
-    id: '2',
-    companyId: 'company-1',
-    name: 'Baterias',
-    description: 'Baterias de auto usadas',
-    createdAt: new Date('2024-01-01'),
-  },
-  {
-    id: '3',
-    companyId: 'company-1',
-    name: 'Cobre',
-    description: 'Cobre limpio',
-    createdAt: new Date('2024-01-01'),
-  },
-  {
-    id: '4',
-    companyId: 'company-1',
-    name: 'Aluminio',
-    description: 'Aluminio de latas y perfiles',
-    createdAt: new Date('2024-01-01'),
-  },
-]
-
 // Mock clients
 export const mockClients: Client[] = [
   {
     id: '1',
     companyId: 'company-1',
-    name: 'Roberto Martinez',
     businessName: 'Taller Martinez',
     ownerName: 'Roberto Martinez',
     dni: '12345678',
@@ -108,7 +75,6 @@ export const mockClients: Client[] = [
   {
     id: '2',
     companyId: 'company-1',
-    name: 'Maria Santos',
     businessName: 'Recicladora Santos',
     ownerName: 'Maria Santos',
     dni: '87654321',
@@ -124,7 +90,6 @@ export const mockClients: Client[] = [
   {
     id: '3',
     companyId: 'company-1',
-    name: 'Carlos Fernandez',
     businessName: 'Chatarreria El Gallo',
     ownerName: 'Carlos Fernandez',
     dni: '11223344',
@@ -140,7 +105,6 @@ export const mockClients: Client[] = [
   {
     id: '4',
     companyId: 'company-1',
-    name: 'Ana Rodriguez',
     businessName: 'Metales Rodriguez',
     ownerName: 'Ana Rodriguez',
     dni: '44332211',
@@ -156,7 +120,6 @@ export const mockClients: Client[] = [
   {
     id: '5',
     companyId: 'company-1',
-    name: 'Pedro Gonzalez',
     businessName: 'Autopartes Pedro',
     ownerName: 'Pedro Gonzalez',
     dni: '55667788',
@@ -249,10 +212,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Carlos Fernandez',
     clientOrigin: 'Zona Norte',
     date: new Date('2025-01-06'),
-    items: [
-      { scrapId: '1', scrapName: 'Hierro', amount: 1500 },
-      { scrapId: '3', scrapName: 'Cobre', amount: 600 }
-    ],
+    items: [],
     totalValue: 2100,
     notes: 'Full payment for credit #3',
     createdAt: new Date('2025-01-06'),
@@ -264,10 +224,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Maria Santos',
     clientOrigin: 'Zona Centro',
     date: new Date('2025-01-09'),
-    items: [
-       { scrapId: '2', scrapName: 'Baterias', amount: 800 },
-       { scrapId: '1', scrapName: 'Hierro', amount: 400 }
-    ],
+    items: [],
     totalValue: 1200,
     notes: 'Partial payment',
     createdAt: new Date('2025-01-09'),
@@ -279,10 +236,7 @@ export const mockScrapPayments: ScrapPayment[] = [
     clientName: 'Roberto Martinez',
     clientOrigin: 'Zona Industrial',
     date: new Date('2025-01-11'),
-    items: [
-       { scrapId: '1', scrapName: 'Hierro', amount: 1000 },
-       { scrapId: '4', scrapName: 'Aluminio', amount: 800 }
-    ],
+    items: [],
     totalValue: 1800,
     notes: 'Regular collection',
     createdAt: new Date('2025-01-11'),

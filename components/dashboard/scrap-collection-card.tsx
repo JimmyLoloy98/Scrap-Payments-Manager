@@ -163,15 +163,16 @@ export function ScrapCollectionCard() {
       </CardHeader>
       <CardContent>
         <div className="rounded-md border overflow-hidden">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead>Tipo de Material</TableHead>
-                <TableHead className="text-right">Acumulados</TableHead>
-                <TableHead>Unidad</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <div className="max-h-[350px] overflow-y-auto relative">
+            <Table>
+              <TableHeader className="bg-muted sticky top-0 z-10 shadow-sm">
+                <TableRow className="bg-muted hover:bg-muted">
+                  <TableHead className="text-muted-foreground">Tipo de Material</TableHead>
+                  <TableHead className="text-right text-muted-foreground">Acumulados</TableHead>
+                  <TableHead className="text-muted-foreground">Unidad</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={3} className="h-32 text-center">
@@ -188,7 +189,7 @@ export function ScrapCollectionCard() {
                     <TableCell className="text-right text-base">
                       {item.totalQuantity.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
                         {item.unitMeasure}
                       </span>
@@ -208,6 +209,7 @@ export function ScrapCollectionCard() {
             </TableBody>
           </Table>
         </div>
+      </div>
       </CardContent>
     </Card>
   )

@@ -23,7 +23,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react'
-import { mockClients } from '@/lib/mock-data'
 import { useOrigins } from '@/contexts/origins-context'
 import { useClients } from '@/contexts/clients-context'
 import {

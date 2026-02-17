@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import type { User } from '@/lib/types'
-import { mockUser } from '@/lib/mock-data'
 
 import { authService } from '@/services'
 import { useEffect } from 'react'

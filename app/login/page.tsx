@@ -23,7 +23,7 @@ export default function LoginPage() {
     setError('')
 
     if (!email || !password) {
-      setError('Please enter both email and password')
+      setError('Por favor ingrese su correo electrónico y contraseña')
       return
     }
 
@@ -52,7 +52,7 @@ export default function LoginPage() {
           <div>
             <CardTitle className="text-2xl font-bold">ScrapFlow</CardTitle>
             <CardDescription className="mt-2">
-              Sign in to manage your credits and scrap payments
+              Inicia sesión para gestionar tus créditos y pagos de chatarra
             </CardDescription>
           </div>
         </CardHeader>
@@ -75,7 +75,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Ingresa tu contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -89,10 +89,10 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
+                  Iniciando sesión...
                 </>
               ) : (
-                'Sign in'
+                'Iniciar sesión'
               )}
             </Button>
           </form>
