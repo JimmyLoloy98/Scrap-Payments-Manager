@@ -11,6 +11,8 @@ interface ScrapsContextType {
   addScrap: (data: Partial<ScrapType>) => Promise<void>
   updateScrap: (id: string | number, data: Partial<ScrapType>) => Promise<void>
   deleteScrap: (id: string | number) => Promise<void>
+  unitFilter: string
+  setUnitFilter: (filter: string) => void
 }
 
 const ScrapsContext = createContext<ScrapsContextType | undefined>(undefined)
@@ -18,6 +20,7 @@ const ScrapsContext = createContext<ScrapsContextType | undefined>(undefined)
 export function ScrapsProvider({ children }: { children: ReactNode }) {
   const [scraps, setScraps] = useState<ScrapType[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [unitFilter, setUnitFilter] = useState<string>('all')
   const [total, setTotal] = useState(0)
 
   const refreshScraps = useCallback(async () => {
@@ -26,7 +29,7 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
       setIsLoading(true)
     }
     try {
-      const response = await scrapsService.getAll()
+      const response = await scrapsService.getAll(1, 100, unitFilter)
       setScraps(response.scraps)
       setTotal(response.total)
     } catch (error) {
@@ -34,7 +37,7 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [scraps.length])
+  }, [scraps.length, unitFilter])
 
   useEffect(() => {
     refreshScraps()
@@ -83,6 +86,8 @@ export function ScrapsProvider({ children }: { children: ReactNode }) {
         addScrap,
         updateScrap,
         deleteScrap,
+        unitFilter,
+        setUnitFilter,
       }}
     >
       {children}

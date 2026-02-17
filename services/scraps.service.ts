@@ -2,8 +2,13 @@ import { apiClient } from './api-client';
 import { ScrapType, ScrapsResponse } from '@/lib/types';
 
 export const scrapsService = {
-  getAll: (page = 1, limit = 10) =>
-    apiClient.get<ScrapsResponse>(`/scraps?page=${page}&limit=${limit}`),
+  getAll: (page = 1, limit = 10, unitMeasure?: string) => {
+    let url = `/scraps?page=${page}&limit=${limit}`;
+    if (unitMeasure && unitMeasure !== 'all') {
+      url += `&unitMeasure=${unitMeasure}`;
+    }
+    return apiClient.get<ScrapsResponse>(url);
+  },
 
   create: (data: Partial<ScrapType>) =>
     apiClient.post<ScrapType>('/scraps', data),
