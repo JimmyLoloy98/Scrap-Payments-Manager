@@ -141,6 +141,13 @@ export function PaymentFormDialog({
     setItems(newItems);
   };
 
+  const getScrapUnit = (scrapId: string | number | undefined) => {
+    if (!scrapId) return "";
+    const scrap = scraps.find((s) => String(s.id) === String(scrapId));
+    if (!scrap) return "";
+    return scrap.unitMeasure === "kg" ? "Kg" : "Und";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -248,7 +255,7 @@ export function PaymentFormDialog({
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-[1fr_1fr_40px] sm:grid-cols-[1fr_100px_100px_auto] gap-x-2 gap-y-3 sm:gap-y-0 items-start border-b sm:border-0 pb-4 sm:pb-0 last:border-0"
+                  className="grid grid-cols-[1fr_1fr_40px] sm:grid-cols-[1fr_100px_100px_auto] gap-x-2 gap-y-3 sm:gap-y-0 items-center border-b sm:border-0 pb-4 sm:pb-0 last:border-0"
                 >
                   <div className="col-span-3 sm:col-span-1 grid gap-1">
                     {index === 0 && (
@@ -263,7 +270,7 @@ export function PaymentFormDialog({
                       }
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccionar..." />
+                        <SelectValue placeholder="Selecciona la chatarra" />
                       </SelectTrigger>
                       <SelectContent>
                         {scraps.map((scrap) => (
@@ -280,17 +287,25 @@ export function PaymentFormDialog({
                         Cant.
                       </Label>
                     )}
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                      value={item.quantity || ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "quantity", e.target.value)
-                      }
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        value={item.quantity || ""}
+                        onChange={(e) =>
+                          handleItemChange(index, "quantity", e.target.value)
+                        }
+                        className="pr-10"
+                        required
+                      />
+                      {item.scrapId && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground pointer-events-none uppercase">
+                          {getScrapUnit(item.scrapId)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="grid gap-1">
                     {index === 0 && (
@@ -298,20 +313,25 @@ export function PaymentFormDialog({
                         Precio
                       </Label>
                     )}
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                      value={item.amount || ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "amount", e.target.value)
-                      }
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        value={item.amount || ""}
+                        onChange={(e) =>
+                          handleItemChange(index, "amount", e.target.value)
+                        }
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground pointer-events-none uppercase">
+                        S/
+                      </span>
+                    </div>
                   </div>
                   <div
                     className={cn(
-                      "flex items-end justify-center",
+                      "flex items-center justify-center",
                       index === 0 ? "pt-2 sm:pt-6" : "pt-1 sm:pt-0"
                     )}
                   >
