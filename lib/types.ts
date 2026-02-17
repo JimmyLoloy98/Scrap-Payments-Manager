@@ -114,6 +114,7 @@ export interface ScrapItem {
   scrapId: string | number
   scrapName: string
   amount: number // Monetary value
+  quantity: number
 }
 
 export interface ScrapPayment {
@@ -125,6 +126,7 @@ export interface ScrapPayment {
   date: string | Date
   items: ScrapItem[]
   totalValue: number
+  quantity?: number
   notes: string
   createdAt: string | Date
   updatedAt?: string | Date

@@ -219,7 +219,7 @@ export default function ClientDetailPage({
           {row.items && row.items.length > 0 ? (
             row.items.map((item, idx) => (
               <span key={idx} className="block text-sm">
-                • {item.scrapName}{row.items.length > 1 && `: ${formatCurrency(item.amount)}`}
+                • {item.scrapName}: {formatCurrency(item.amount)} {item.quantity ? `(${item.quantity})` : ''}
               </span>
             ))
           ) : (

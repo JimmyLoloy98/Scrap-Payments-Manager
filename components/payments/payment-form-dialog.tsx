@@ -75,7 +75,7 @@ export function PaymentFormDialog({
   });
 
   const [items, setItems] = useState<Partial<ScrapItem>[]>([
-    { scrapId: "", amount: 0 },
+    { scrapId: "", amount: 0, quantity: 0 },
   ]);
 
   const isEditing = !!payment;
@@ -90,14 +90,14 @@ export function PaymentFormDialog({
         setItems(
           payment.items && payment.items.length > 0
             ? payment.items
-            : [{ scrapId: "", amount: 0 }]
+            : [{ scrapId: "", amount: 0, quantity: 0 }]
         );
       } else {
         setFormData({
             date: new Date(),
             notes: "",
         });
-        setItems([{ scrapId: "", amount: 0 }]);
+        setItems([{ scrapId: "", amount: 0, quantity: 0 }]);
       }
     }
   }, [payment, open]);
@@ -107,7 +107,7 @@ export function PaymentFormDialog({
   };
 
   const handleAddItem = () => {
-    setItems([...items, { scrapId: "", amount: 0 }]);
+    setItems([...items, { scrapId: "", amount: 0, quantity: 0 }]);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -122,7 +122,7 @@ export function PaymentFormDialog({
     value: string | number,
   ) => {
     const newItems = [...items];
-    if (field === "amount") {
+    if (field === "amount" || field === "quantity") {
       newItems[index] = {
         ...newItems[index],
         [field]: typeof value === "string" ? parseFloat(value) || 0 : value,
@@ -161,7 +161,7 @@ export function PaymentFormDialog({
         date: new Date(),
         notes: "",
       });
-      setItems([{ scrapId: "", amount: 0 }]);
+      setItems([{ scrapId: "", amount: 0, quantity: 0 }]);
     } finally {
       setIsLoading(false);
     }
@@ -248,9 +248,9 @@ export function PaymentFormDialog({
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="grid sm:grid-cols-[1fr_120px_auto] gap-2 items-start"
+                  className="grid grid-cols-[1fr_1fr_40px] sm:grid-cols-[1fr_100px_100px_auto] gap-x-2 gap-y-3 sm:gap-y-0 items-start border-b sm:border-0 pb-4 sm:pb-0 last:border-0"
                 >
-                  <div className="grid gap-1">
+                  <div className="col-span-3 sm:col-span-1 grid gap-1">
                     {index === 0 && (
                       <Label className="text-xs text-muted-foreground">
                         Tipo de Chatarra
@@ -277,6 +277,24 @@ export function PaymentFormDialog({
                   <div className="grid gap-1">
                     {index === 0 && (
                       <Label className="text-xs text-muted-foreground">
+                        Cant.
+                      </Label>
+                    )}
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      value={item.quantity || ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "quantity", e.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    {index === 0 && (
+                      <Label className="text-xs text-muted-foreground">
                         Precio
                       </Label>
                     )}
@@ -292,7 +310,10 @@ export function PaymentFormDialog({
                     />
                   </div>
                   <div
-                    className={`flex items-end ${index === 0 ? "pt-6" : ""}`}
+                    className={cn(
+                      "flex items-end justify-center",
+                      index === 0 ? "pt-2 sm:pt-6" : "pt-1 sm:pt-0"
+                    )}
                   >
                     <Button
                       type="button"
@@ -300,7 +321,7 @@ export function PaymentFormDialog({
                       size="icon"
                       onClick={() => handleRemoveItem(index)}
                       disabled={items.length === 1}
-                      className="text-destructive hover:text-destructive/90"
+                      className="text-destructive hover:text-destructive/90 h-9 w-9"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
