@@ -43,8 +43,6 @@ export default function ClientsPage() {
     updateClient,
     deleteClient,
     isLoading: clientsLoading,
-    searchTerm,
-    setSearchTerm
   } = useClients()
   const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
@@ -99,7 +97,7 @@ export default function ClientsPage() {
       ),
     },
     {
-      key: 'actions', // This key is virtual/custom in DataTable but we use 'id' or similar to satisfy TS if needed, but DataTable likely handles any string key for custom cells
+      key: 'actions',
       header: 'Acciones',
       sortable: false,
       searchable: false,
@@ -165,8 +163,6 @@ export default function ClientsPage() {
             columns={columns}
             searchPlaceholder="Buscar negocios..."
             isLoading={clientsLoading}
-            onSearch={setSearchTerm}
-            searchValue={searchTerm}
           />
         </div>
       </div>

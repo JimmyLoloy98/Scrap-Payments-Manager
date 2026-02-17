@@ -14,8 +14,6 @@ interface ClientsContextType {
   updateClient: (id: string | number, data: Partial<Client>) => Promise<void>
   deleteClient: (id: string | number) => Promise<void>
   getClientById: (id: string | number) => Promise<Client | null>
-  searchTerm: string
-  setSearchTerm: (search: string) => void
 }
 
 const ClientsContext = createContext<ClientsContextType | undefined>(undefined)
@@ -23,7 +21,6 @@ const ClientsContext = createContext<ClientsContextType | undefined>(undefined)
 export function ClientsProvider({ children }: { children: ReactNode }) {
   const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState<string>('')
   const [total, setTotal] = useState(0)
 
   const refreshClients = useCallback(async () => {
@@ -32,7 +29,7 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
       setIsLoading(true)
     }
     try {
-      const response = await clientsService.getAll(1, 100, searchTerm)
+      const response = await clientsService.getAll(1, 100)
       if (response && response.clients) {
         setClients(response.clients)
         setTotal(response.total)
@@ -45,7 +42,7 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [clients.length, searchTerm]) // Added searchTerm dependency
+  }, [clients.length])
 
   useEffect(() => {
     refreshClients()
@@ -104,8 +101,6 @@ export function ClientsProvider({ children }: { children: ReactNode }) {
         updateClient,
         deleteClient,
         getClientById,
-        searchTerm,
-        setSearchTerm,
       }}
     >
       {children}

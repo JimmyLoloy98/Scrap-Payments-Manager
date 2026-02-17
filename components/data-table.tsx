@@ -74,17 +74,27 @@ export function DataTable<T>({
   const searchableColumns = columns.filter((col) => col.searchable !== false)
 
   const filteredData = useMemo(() => {
-    // If onSearch is provided, the filtering is handled by the server
-    if (onSearch || !search) return data
+    if (!search) return data
+
+    const searchLower = search.toLowerCase()
 
     return data.filter((row) =>
       searchableColumns.some((col) => {
         const value = (row as any)[col.key]
         if (value == null) return false
-        return String(value).toLowerCase().includes(search.toLowerCase())
+
+        // Special handling for the 'items' column which is common in this app
+        if (col.key === 'items' && Array.isArray(value)) {
+          return value.some(item => {
+            const description = item.description || item.scrapName || ''
+            return String(description).toLowerCase().includes(searchLower)
+          })
+        }
+
+        return String(value).toLowerCase().includes(searchLower)
       })
     )
-  }, [data, search, searchableColumns, onSearch])
+  }, [data, search, searchableColumns])
 
   const sortedData = useMemo(() => {
     if (!sortKey) return filteredData
@@ -147,6 +157,9 @@ export function DataTable<T>({
               setCurrentPage(1)
             }}
             className="pl-9 pr-9"
+            autoComplete="off"
+            data-lpignore="true"
+            spellCheck={false}
           />
           {search && (
             <button

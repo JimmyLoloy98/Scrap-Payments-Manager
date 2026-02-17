@@ -61,52 +61,26 @@ export default function ClientDetailPage({
   const [editingCredit, setEditingCredit] = useState<Credit | null>(null);
   const [showPhotoPreview, setShowPhotoPreview] = useState(false);
 
-  const [creditsSearch, setCreditsSearch] = useState("");
-  const [paymentsSearch, setPaymentsSearch] = useState("");
-  const [isCreditsLoading, setIsCreditsLoading] = useState(false);
-  const [isPaymentsLoading, setIsPaymentsLoading] = useState(false);
+
 
   // New state for direct upload
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadPreviewUrl, setUploadPreviewUrl] = useState<string>("");
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const refreshCredits = useCallback(async (search: string) => {
-    setIsCreditsLoading(true);
-    try {
-      const creditsRes = await creditsService.getByClient(id, { search });
-      setCredits(creditsRes.credits || []);
-    } catch (error) {
-      console.error("Error loading credits:", error);
-    } finally {
-      setIsCreditsLoading(false);
-    }
-  }, [id]);
-
-  const refreshPayments = useCallback(async (search: string) => {
-    setIsPaymentsLoading(true);
-    try {
-      const paymentsRes = await paymentsService.getByClient(id, { search });
-      setPayments(paymentsRes.payments || []);
-    } catch (error) {
-      console.error("Error loading payments:", error);
-    } finally {
-      setIsPaymentsLoading(false);
-    }
-  }, [id]);
-
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [clientData, summaryData] = await Promise.all([
+      const [clientData, creditsRes, paymentsRes, summaryData] = await Promise.all([
         clientsService.getById(id),
+        creditsService.getByClient(id),
+        paymentsService.getByClient(id),
         clientsService.getSummary(id),
       ]);
       setClient(clientData);
+      setCredits(creditsRes.credits || []);
+      setPayments(paymentsRes.payments || []);
       setSummary(summaryData);
-
-      // We don't call refreshCredits/Payments here because DataTable
-      // with onSearch will call them on mount with the initial search value.
     } catch (error) {
       console.error("Error loading client details:", error);
     } finally {
@@ -117,16 +91,6 @@ export default function ClientDetailPage({
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  const handleCreditsSearch = useCallback((val: string) => {
-    setCreditsSearch(val);
-    refreshCredits(val);
-  }, [refreshCredits]);
-
-  const handlePaymentsSearch = useCallback((val: string) => {
-    setPaymentsSearch(val);
-    refreshPayments(val);
-  }, [refreshPayments]);
 
   const handleAddCredit = async (data: Partial<Credit>) => {
     await creditsService.create({ ...data, clientId: id });
@@ -616,9 +580,7 @@ export default function ClientDetailPage({
                     data={credits}
                     columns={columnsCredits}
                     searchPlaceholder="Buscar por producto..."
-                    isLoading={isCreditsLoading}
-                    onSearch={handleCreditsSearch}
-                    searchValue={creditsSearch}
+                    isLoading={isLoading}
                   />
                 </CardContent>
               </Card>
@@ -645,9 +607,7 @@ export default function ClientDetailPage({
                     data={payments}
                     columns={columnsPayments}
                     searchPlaceholder="Buscar por nombre..."
-                    isLoading={isPaymentsLoading}
-                    onSearch={handlePaymentsSearch}
-                    searchValue={paymentsSearch}
+                    isLoading={isLoading}
                   />
                 </CardContent>
               </Card>

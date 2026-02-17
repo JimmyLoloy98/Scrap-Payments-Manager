@@ -43,8 +43,6 @@ export default function ScrapsPage() {
     total,
     unitFilter,
     setUnitFilter,
-    searchTerm,
-    setSearchTerm
   } = useScraps()
   const [deleteTarget, setDeleteTarget] = useState<ScrapType | null>(null)
 
@@ -164,8 +162,6 @@ export default function ScrapsPage() {
             columns={columns}
             searchPlaceholder="Buscar chatarras..."
             isLoading={isLoading}
-            onSearch={setSearchTerm}
-            searchValue={searchTerm}
           />
         </div>
       </div>

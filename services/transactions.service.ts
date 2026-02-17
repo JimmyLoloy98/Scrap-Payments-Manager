@@ -2,21 +2,19 @@ import { apiClient } from './api-client';
 import { Credit, ScrapPayment } from '@/lib/types';
 
 export const creditsService = {
-  getAll: (params: { clientId?: string | number, page?: number, limit?: number, search?: string } = {}) => {
+  getAll: (params: { clientId?: string | number, page?: number, limit?: number } = {}) => {
     const query = new URLSearchParams()
     if (params.clientId) query.append('clientId', String(params.clientId))
     if (params.page) query.append('page', String(params.page))
     if (params.limit) query.append('limit', String(params.limit))
-    if (params.search) query.append('search', params.search)
     return apiClient.get<import('@/lib/types').CreditsResponse>(`/credits?${query.toString()}`)
   },
 
   getById: (id: string | number) =>
     apiClient.get<Credit>(`/credits/${id}`),
 
-  getByClient: (clientId: string | number, params: { search?: string, page?: number, limit?: number } = {}) => {
+  getByClient: (clientId: string | number, params: { page?: number, limit?: number } = {}) => {
     const query = new URLSearchParams()
-    if (params.search) query.append('search', params.search)
     if (params.page) query.append('page', String(params.page))
     if (params.limit) query.append('limit', String(params.limit))
     return apiClient.get<import('@/lib/types').CreditsResponse>(`/clients/${clientId}/credits?${query.toString()}`)
@@ -36,21 +34,19 @@ export const creditsService = {
 };
 
 export const paymentsService = {
-  getAll: (params: { clientId?: string | number, page?: number, limit?: number, search?: string } = {}) => {
+  getAll: (params: { clientId?: string | number, page?: number, limit?: number } = {}) => {
     const query = new URLSearchParams()
     if (params.clientId) query.append('clientId', String(params.clientId))
     if (params.page) query.append('page', String(params.page))
     if (params.limit) query.append('limit', String(params.limit))
-    if (params.search) query.append('search', params.search)
     return apiClient.get<import('@/lib/types').PaymentsResponse>(`/payments?${query.toString()}`)
   },
 
   getById: (id: string | number) =>
     apiClient.get<ScrapPayment>(`/payments/${id}`),
 
-  getByClient: (clientId: string | number, params: { search?: string, page?: number, limit?: number } = {}) => {
+  getByClient: (clientId: string | number, params: { page?: number, limit?: number } = {}) => {
     const query = new URLSearchParams()
-    if (params.search) query.append('search', params.search)
     if (params.page) query.append('page', String(params.page))
     if (params.limit) query.append('limit', String(params.limit))
     return apiClient.get<import('@/lib/types').PaymentsResponse>(`/clients/${clientId}/payments?${query.toString()}`)
