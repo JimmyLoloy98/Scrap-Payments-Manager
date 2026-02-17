@@ -38,7 +38,15 @@ import { formatCurrency } from '@/lib/utils'
 
 export default function ClientsPage() {
   const { origins } = useOrigins()
-  const { clients, addClient, updateClient, deleteClient, isLoading: clientsLoading } = useClients()
+  const {
+    clients,
+    addClient,
+    updateClient,
+    deleteClient,
+    isLoading: clientsLoading,
+    searchTerm,
+    setSearchTerm
+  } = useClients()
   const [deleteTarget, setDeleteTarget] = useState<Client | null>(null)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [originFilter, setOriginFilter] = useState<string>('all')
@@ -177,6 +185,8 @@ export default function ClientsPage() {
             columns={columns}
             searchPlaceholder="Buscar negocios..."
             isLoading={clientsLoading}
+            onSearch={setSearchTerm}
+            searchValue={searchTerm}
           />
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Table,
   TableBody,
@@ -36,6 +36,8 @@ interface DataTableProps<T> {
   pageSize?: number
   searchPlaceholder?: string
   isLoading?: boolean
+  onSearch?: (value: string) => void
+  searchValue?: string
 }
 
 export function DataTable<T>({
@@ -44,8 +46,22 @@ export function DataTable<T>({
   pageSize: initialPageSize = 10,
   searchPlaceholder = 'Search...',
   isLoading = false,
+  onSearch,
+  searchValue,
 }: DataTableProps<T>) {
-  const [search, setSearch] = useState('')
+  const [internalSearch, setInternalSearch] = useState('')
+  const search = searchValue !== undefined ? searchValue : internalSearch
+
+  // Debounce server-side search
+  useEffect(() => {
+    if (!onSearch) return
+
+    const timer = setTimeout(() => {
+      onSearch(internalSearch)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [internalSearch, onSearch])
   const [sortKey, setSortKey] = useState<string | null>('date')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [currentPage, setCurrentPage] = useState(1)
@@ -122,7 +138,12 @@ export function DataTable<T>({
             placeholder={searchPlaceholder}
             value={search}
             onChange={(e) => {
-              setSearch(e.target.value)
+              const value = e.target.value
+              if (onSearch) {
+                setInternalSearch(value)
+              } else {
+                setInternalSearch(value) // Still update internal for controlled/uncontrolled hybrid if needed, but let's be consistent
+              }
               setCurrentPage(1)
             }}
             className="pl-9"
@@ -184,7 +205,7 @@ export function DataTable<T>({
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Registros por página:</span>
+          <span>Mostrar por página:</span>
           <Select
             value={String(pageSize)}
             onValueChange={(value) => {
@@ -205,7 +226,7 @@ export function DataTable<T>({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
-            Página {currentPage} de {totalPages || 1}
+            Pág. {currentPage} de {totalPages || 1}
           </span>
           <Button
             variant="outline"

@@ -42,7 +42,9 @@ export default function ScrapsPage() {
     isLoading,
     total,
     unitFilter,
-    setUnitFilter
+    setUnitFilter,
+    searchTerm,
+    setSearchTerm
   } = useScraps()
   const [deleteTarget, setDeleteTarget] = useState<ScrapType | null>(null)
 
@@ -146,17 +148,17 @@ export default function ScrapsPage() {
                 Administra los tipos de chatarra
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-muted-foreground">Filtrar:</span>
                 <Select value={unitFilter} onValueChange={setUnitFilter}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[130px]">
                     <SelectValue placeholder="Unidad de medida" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas las unidades</SelectItem>
-                    <SelectItem value="kg">Kilogramos (Kg)</SelectItem>
-                    <SelectItem value="und">Unidades (Und)</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="kg">(Kg)</SelectItem>
+                    <SelectItem value="und">(Und)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -174,6 +176,8 @@ export default function ScrapsPage() {
             columns={columns}
             searchPlaceholder="Buscar chatarras..."
             isLoading={isLoading}
+            onSearch={setSearchTerm}
+            searchValue={searchTerm}
           />
         </div>
       </div>

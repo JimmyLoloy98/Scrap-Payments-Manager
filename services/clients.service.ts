@@ -2,8 +2,13 @@ import { apiClient } from './api-client';
 import { Client, ClientsResponse } from '@/lib/types';
 
 export const clientsService = {
-  getAll: (page = 1, limit = 10) =>
-    apiClient.get<ClientsResponse>(`/clients?page=${page}&limit=${limit}`),
+  getAll: (page = 1, limit = 10, search?: string) => {
+    let url = `/clients?page=${page}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    return apiClient.get<ClientsResponse>(url);
+  },
 
   getById: (id: string | number) =>
     apiClient.get<Client>(`/clients/${id}`),
