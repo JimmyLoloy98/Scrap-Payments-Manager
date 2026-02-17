@@ -28,13 +28,13 @@ export function OverviewChart({ data }: OverviewChartProps) {
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <XAxis
                 dataKey="month"
-                stroke="hsl(var(--muted-foreground))"
+                stroke="var(--muted-foreground)"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                stroke="hsl(var(--muted-foreground))"
+                stroke="var(--muted-foreground)"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
@@ -42,25 +42,25 @@ export function OverviewChart({ data }: OverviewChartProps) {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: 'var(--card)',
+                  border: '1px solid var(--border)',
                   borderRadius: '8px',
                 }}
                 itemStyle={{ fontSize: '12px' }}
-                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold', marginBottom: '4px' }}
+                labelStyle={{ color: 'var(--foreground)', fontWeight: 'bold', marginBottom: '4px' }}
                 formatter={(value: number) => [`S/ ${value.toLocaleString()}`, '']}
               />
               <Bar
                 dataKey="credits"
                 name="Créditos"
-                fill="hsl(var(--chart-3))"
+                fill="var(--primary)"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
               />
               <Bar
                 dataKey="payments"
                 name="Pagos"
-                fill="hsl(var(--primary))"
+                fill="var(--chart-6)"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
               />
@@ -69,11 +69,11 @@ export function OverviewChart({ data }: OverviewChartProps) {
         </div>
         <div className="flex items-center justify-center gap-6 mt-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-sm bg-chart-3" />
+            <div className="w-3 h-3 rounded-sm bg-primary" />
             <span className="text-sm text-muted-foreground">Créditos</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-sm bg-primary" />
+            <div className="w-3 h-3 rounded-sm bg-indigo-500" />
             <span className="text-sm text-muted-foreground">Pagos</span>
           </div>
         </div>

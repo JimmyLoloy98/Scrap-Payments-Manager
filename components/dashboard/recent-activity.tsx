@@ -11,13 +11,6 @@ interface RecentActivityTableProps {
 }
 
 export function RecentActivityTable({ activities }: RecentActivityTableProps) {
-  const formatDate = (date: Date | string) => {
-    return new Intl.DateTimeFormat('es-PE', {
-      month: 'numeric',
-      day: 'numeric',
-    }).format(new Date(date))
-  }
-
   return (
     <Card className="w-full h-full">
       <CardHeader>
@@ -38,33 +31,30 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
                     activity.type === 'credit'
-                      ? 'bg-chart-3/10 text-chart-3'
-                      : 'bg-primary/10 text-primary'
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-gray-500/10 text-gray-500'
                   }`}
                 >
                   {activity.type === 'credit' ? (
                     <CreditCard className="w-4 h-4" />
                   ) : (
-                    <Recycle className="w-4 h-4" />
+                    <Recycle className="w-4 h-4 text-indigo-500" />
                   )}
                 </div>
                 <div className="min-w-0">
                   <p className="font-medium truncate">
-                    {activity.clientName || (activity as any).client_name || 'Cliente desconocido'}
+                    {activity.clientName || 'Cliente desconocido'}
                   </p>
-                  <p className="text-sm text-muted-foreground truncate">
+                  {/* <p className="text-sm text-muted-foreground truncate">
                     {activity.description}
-                  </p>
+                  </p> */}
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <Badge variant={activity.type === 'credit' ? 'secondary' : 'default'}>
+                <Badge variant={activity.type === 'credit' ? 'secondary' : 'indigo'}>
                   {activity.type === 'credit' ? '-' : '+'}
                   {formatCurrency(activity.amount || (activity as any).total_amount || 0)}
                 </Badge>
-                <span className="text-sm text-muted-foreground hidden sm:block">
-                  {formatDate(activity.date)}
-                </span>
               </div>
             </div>
             ))

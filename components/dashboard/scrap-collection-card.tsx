@@ -190,7 +190,7 @@ export function ScrapCollectionCard() {
                       {item.totalQuantity.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                      <span className="px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-600 text-[10px] font-bold uppercase tracking-wider">
                         {item.unitMeasure}
                       </span>
                     </TableCell>

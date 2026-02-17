@@ -38,8 +38,8 @@ export default function DashboardLayout({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-xl font-semibold mb-2">Please log in</h1>
-          <p className="text-muted-foreground">You need to be authenticated to access this page.</p>
+          <h1 className="text-xl font-semibold mb-2">Inicia Sesión</h1>
+          <p className="text-muted-foreground">Debes iniciar sesión para acceder a esta página.</p>
         </div>
       </div>
     )

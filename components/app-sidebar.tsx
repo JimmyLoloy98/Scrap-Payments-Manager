@@ -79,14 +79,11 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
-            <Recycle className="w-5 h-5 text-primary" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+            <Recycle className="w-4 h-4 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sidebar-foreground">ScrapFlow</span>
-            <span className="text-xs text-muted-foreground truncate max-w-[140px]">
-              {user?.company.name}
-            </span>
+            <span className="text-lg md:text-base font-semibold text-sidebar-foreground">{user?.company.name}</span>
           </div>
         </Link>
       </SidebarHeader>

@@ -11,8 +11,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ScrapFlow - Credit & Scrap Payment Management',
-  description: 'Multi-tenant admin dashboard for managing clients, product deliveries on credit, and scrap metal payments',
+  title: 'ScrapFlow - Soluciones en Gestión de Chatarra',
+  description: 'Panel de administración para la gestión de clientes, entregas de productos a crédito y pagos de chatarra',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -29,7 +29,6 @@ export const metadata: Metadata = {
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
   },
 }
 

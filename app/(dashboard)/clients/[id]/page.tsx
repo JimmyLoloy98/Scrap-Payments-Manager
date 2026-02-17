@@ -164,7 +164,9 @@ export default function ClientDetailPage({
     {
       key: "date",
       header: "Fecha",
-      cell: (row) => formatDate(row.date),
+      cell: (row) => (
+        <span className="text-xs">{formatDate(row.date)}</span>
+      )
     },
     {
       key: "items",
@@ -208,7 +210,9 @@ export default function ClientDetailPage({
     {
       key: "date",
       header: "Fecha",
-      cell: (row) => formatDate(row.date),
+      cell: (row) => (
+        <span className="text-xs">{formatDate(row.date)}</span>
+      )
     },
     {
       key: "items",
@@ -224,11 +228,6 @@ export default function ClientDetailPage({
             ))
           ) : (
             <span className="text-muted-foreground italic">Sin detalles</span>
-          )}
-          {/* Fallback for old data if needed */}
-          {/* @ts-ignore */}
-          {row.scrapDetails && (
-            <span className="text-xs text-yellow-600">Old data present</span>
           )}
         </div>
       ),
@@ -560,7 +559,7 @@ export default function ClientDetailPage({
             </TabsContent>
 
             <TabsContent value="credits" className="space-y-4">
-              <Card>
+              <Card className="">
                 <CardHeader className="flex items-center justify-between">
                   <div>
                     <CardTitle>Historial de Creditos</CardTitle>

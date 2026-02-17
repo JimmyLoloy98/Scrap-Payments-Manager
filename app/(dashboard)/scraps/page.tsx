@@ -167,7 +167,7 @@ export default function ScrapsPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-4 max-w-xs">
-            <p className="text-sm text-muted-foreground">Total de Tipos</p>
+            <p className="text-sm text-muted-foreground">Total de tipos de chatarra</p>
             <p className="text-2xl font-bold">{total}</p>
           </div>
 

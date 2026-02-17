@@ -126,7 +126,7 @@ export default function OriginsPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-4 max-w-xs">
-            <p className="text-sm text-muted-foreground">Total de Zonas</p>
+            <p className="text-sm text-muted-foreground">Total de zonas</p>
             <p className="text-2xl font-bold">{total}</p>
           </div>
 

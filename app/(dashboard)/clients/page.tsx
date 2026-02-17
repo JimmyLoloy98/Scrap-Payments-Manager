@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Eye, Pencil, Trash2, X } from 'lucide-react'
 import { useOrigins } from '@/contexts/origins-context'
 import { useClients } from '@/contexts/clients-context'
 import {
@@ -142,41 +142,34 @@ export default function ClientsPage() {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              {/* <h1 className="text-2xl font-bold tracking-tight">Negocios</h1> */}
               <p className="text-muted-foreground">
                 Gestiona tu base de datos de clientes y sus cuentas
               </p>
             </div>
-            <ClientFormDialog onSubmit={handleAddClient} />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Filtrar:</span>
+                <Select value={originFilter} onValueChange={setOriginFilter}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Todas las zonas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las zonas</SelectItem>
+                    {origins.map((origin) => (
+                      <SelectItem key={origin.id} value={origin.name}>
+                        {origin.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <ClientFormDialog onSubmit={handleAddClient} />
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">Filtrar por procedencia:</span>
-              <Select value={originFilter} onValueChange={setOriginFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Todas las zonas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las zonas</SelectItem>
-                  {origins.map((origin) => (
-                    <SelectItem key={origin.id} value={origin.name}>
-                      {origin.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {originFilter !== 'all' && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setOriginFilter('all')}
-                className="text-muted-foreground"
-              >
-                Limpiar filtro
-              </Button>
-            )}
+          <div className="rounded-lg border bg-card p-4 max-w-xs">
+            <p className="text-sm text-muted-foreground">Total de negocios</p>
+            <p className="text-2xl font-bold">{clients.length}</p>
           </div>
 
           <DataTable
